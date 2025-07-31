@@ -20,7 +20,7 @@
     "ffmpeg-static": "^5.2.0",
     "libsodium-wrappers": "^0.7.15",
     "quick.db": "^9.1.7",
-    "write-file-atomic": "^6.0.0"
+    "quickmongo": "^5.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
