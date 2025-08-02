@@ -1,6 +1,6 @@
 import error from "../utils/error";
 
-export default function logger(data: any) {
+export default function (data: any) {
   try {
     const logstring = `${`[G]〢┃  ${"Perisan Caesar".green}`.yellow}${" 〢 ".magenta}`;
     if (typeof data == "string")

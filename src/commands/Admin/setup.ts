@@ -1,27 +1,49 @@
 import {
+  ActionRowBuilder,
   ApplicationCommandOptionType,
   ApplicationCommandType,
+  ButtonBuilder,
+  ButtonStyle,
   ChannelType,
-  CommandInteraction,
-  CommandInteractionOptionResolver,
+  ComponentType,
   EmbedBuilder,
-  Message,
-  PermissionsBitField
+  PermissionsBitField,
+  StringSelectMenuBuilder,
+  TextChannel
 } from "discord.js";
 import {
-  getOption,
-  EphemeralOption
-} from "../../functions/functions";
+  LanguageDB,
+  PanelDB,
+  PrefixDB
+} from "../../types/database";
+import {
+  getChannel,
+  getOption
+} from "../../utils/interactionTools";
 import { CommandType } from "../../types/interfaces";
+import { Languages } from "../../types/types";
+import DatabaseProperties from "../../utils/DatabaseProperties";
+import responseDelete from "../../utils/responseDelete";
+import selectLanguage from "../../utils/selectLanguage";
 import responseError from "../../utils/responseError";
-import HexToNumber from "../../functions/HexToNumber";
-import getAuthor from "../../utils/getAuthor";
+import radiostation from "../../storage/radiostation.json";
+import languages from "../../storage/languages.json";
 import EmbedData from "../../storage/embed";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
 
-const command: CommandType = {
+const ephemeral = selectLanguage(config.discord.default_language).replies.ephemeral;
+const defaultLanguage = selectLanguage(config.discord.default_language).commands.setup;
+const choices = Object.keys(radiostation)
+  .map((a) => (
+    {
+      label: `${a}`,
+      value: `${a}`
+    }
+  ));
+
+export default {
   data: {
     name: "setup",
     description: "تنظیمات ربات در سرور.",
@@ -37,23 +59,104 @@ const command: CommandType = {
     ]),
     options: [
       {
-        name: "bot-channels",
-        description: "چنلی که بات فقط در آنجا کار کند.",
+        name: "panel",
+        description: defaultLanguage.subCommands.panel.description,
         type: ApplicationCommandOptionType.Subcommand,
+        usage: "[channel | id]",
         options: [
           {
-            name: "white-list",
-            description: "چنلی که کامند های بات باید کار کند.",
+            name: "channel",
+            description: defaultLanguage.subCommands.panel.options.channel,
             type: ApplicationCommandOptionType.Channel,
-            channel_types: [ChannelType.GuildText]
+            channel_types: [ChannelType.GuildText],
+            required: false
           },
           {
-            name: "black-list",
-            description: "چنلی که کامند های بات نباید کار کند.",
-            type: ApplicationCommandOptionType.Channel,
-            channel_types: [ChannelType.GuildText]
+            name: "ephemeral",
+            description: ephemeral.description,
+            type: ApplicationCommandOptionType.String,
+            choices: [
+              {
+                name: ephemeral.choices.yes,
+                value: "true"
+              },
+              {
+                name: ephemeral.choices.no,
+                value: "false"
+              }
+            ],
+            required: false
+          }
+        ]
+      },
+      {
+        name: "prefix",
+        description: defaultLanguage.subCommands.prefix.description,
+        type: ApplicationCommandOptionType.Subcommand,
+        usage: "[string]",
+        options: [
+          {
+            name: "input",
+            description: defaultLanguage.subCommands.prefix.options.input,
+            type: ApplicationCommandOptionType.String,
+            required: false
           },
-          EphemeralOption()
+          {
+            name: "ephemeral",
+            description: ephemeral.description,
+            type: ApplicationCommandOptionType.String,
+            choices: [
+              {
+                name: ephemeral.choices.yes,
+                value: "true"
+              },
+              {
+                name: ephemeral.choices.no,
+                value: "false"
+              }
+            ],
+            required: false
+          }
+        ]
+      },
+      {
+        name: "language",
+        description: defaultLanguage.subCommands.language.description,
+        type: ApplicationCommandOptionType.Subcommand,
+        usage: "[string]",
+        options: [
+          {
+            name: "input",
+            description: defaultLanguage.subCommands.language.options.input,
+            type: ApplicationCommandOptionType.String,
+            choices: Object
+              .keys(languages)
+              .map(a =>
+                JSON.stringify({
+                  name: languages[a as Languages],
+                  value: a
+                })
+              )
+              .map(a => JSON.parse(a)),
+
+            required: false
+          },
+          {
+            name: "ephemeral",
+            description: ephemeral.description,
+            type: ApplicationCommandOptionType.String,
+            choices: [
+              {
+                name: ephemeral.choices.yes,
+                value: "true"
+              },
+              {
+                name: ephemeral.choices.no,
+                value: "false"
+              }
+            ],
+            required: false
+          }
         ]
       }
     ]
@@ -66,56 +169,336 @@ const command: CommandType = {
 
   run: async (client, interaction, args) => {
     try {
-      const
-        user = getAuthor(interaction)!,
-        db = client.db!,
-        Subcommand = getOption<string>(interaction, "getSubcommand", undefined, 0, args);
 
-      switch (Subcommand) {
-        case "bot-channels": {
-          const
-            whiteListChannel = interaction instanceof CommandInteraction && interaction.options instanceof CommandInteractionOptionResolver ? interaction.options.getChannel("white-list") : args![1],
-            blackListChannel = interaction instanceof CommandInteraction && interaction.options instanceof CommandInteractionOptionResolver ? interaction.options.getChannel("black-list") : args![2],
-            embed = new EmbedBuilder()
-              .setAuthor({ name: "Admin Panel | bot-channels" })
-              .setColor(HexToNumber(EmbedData.color.theme));
+      const db = client.db!;
+      const lang = (await db.get<string>(DatabaseProperties(interaction.guildId!).language)) || config.discord.default_language;
+      const language = selectLanguage(lang);
+      const prefix = (await db.get<string>(DatabaseProperties(interaction.guildId!).prefix)) || `${config.discord.prefix}`;
+      const setup = client.commands.get("setup")!;
 
-          if (!whiteListChannel && !blackListChannel) {
+      const subcommand = getOption<string>(interaction, "getSubcommand", undefined, 0, args);
+      switch (subcommand) {
+        case "panel": {
+          const channel = getChannel<TextChannel>(interaction, "channel", 1, args);
+
+          const radioPanel = await db.get<PanelDB>(DatabaseProperties(interaction.guildId!).panel);
+          if (!channel && radioPanel) {
+            const message = await response(interaction, {
+              embeds: [
+                new EmbedBuilder()
+                  .setColor(EmbedData.color.red.HexToNumber())
+                  .setFooter(
+                    {
+                      text: EmbedData.footer.footerText,
+                      iconURL: EmbedData.footer.footerIcon
+                    }
+                  )
+                  .setTitle(language.replies.error)
+                  .setDescription(`${language.commands.setup.subCommands.panel.replies.doDeleteChannel.replaceValues({
+                    channel: radioPanel.channel
+                  })}`)
+              ],
+              components: [
+                new ActionRowBuilder<ButtonBuilder>()
+                  .addComponents(
+                    new ButtonBuilder()
+                      .setCustomId("setup-accept")
+                      .setEmoji("✅")
+                      .setLabel(language.replies.buttons.buttonYes)
+                      .setStyle(ButtonStyle.Success),
+
+                    new ButtonBuilder()
+                      .setCustomId("setup-cancel")
+                      .setEmoji("❌")
+                      .setLabel(language.replies.buttons.buttonNo)
+                      .setStyle(ButtonStyle.Secondary)
+                  )
+              ]
+            });
+
+            const collector = message!.createMessageComponentCollector({ time: 60 * 1000, componentType: ComponentType.Button });
+            collector.on("collect", async (button) => {
+              if (button.user.id !== interaction.member!.user.id)
+                return await responseError(
+                  button,
+                  language.commands.help.replies.invalidUser.replaceValues({
+                    mention_command: `</${setup.data.name}:${setup.data?.id}>`,
+                    author: interaction.member?.toString()!
+                  })
+                );
+
+              switch (button.customId) {
+                case "setup-accept": {
+                  await button.deferUpdate();
+                  await db.delete(DatabaseProperties(interaction.guildId!).panel);
+                  return await button.editReply({
+                    content: language.commands.setup.subCommands.panel.replies.deleteChannel,
+                    embeds: [],
+                    components: []
+                  });
+                };
+                case "setup-cancel": {
+                  collector.stop();
+                };
+              }
+            });
+            collector.on("end", async () => {
+              return await responseDelete(interaction, message);
+            });
+
             return;
           }
 
-          if (whiteListChannel) { }
-          break;
+          else if (!channel)
+            return await responseError(interaction, language.commands.setup.subCommands.panel.replies.noChannel)
+
+          else {
+            const
+              embed = new EmbedBuilder()
+                .setColor(EmbedData.color.theme.HexToNumber())
+                .setTitle(language.commands.setup.subCommands.panel.replies.panelTitle)
+                .setTimestamp(),
+
+              components: ActionRowBuilder<StringSelectMenuBuilder>[] = [];
+
+            choices.chunk(25)
+              .forEach((array, index) => {
+                components.push(
+                  new ActionRowBuilder<StringSelectMenuBuilder>()
+                    .addComponents(
+                      new StringSelectMenuBuilder()
+                        .setCustomId(`radioPanel-${index + 1}`)
+                        .setPlaceholder(language.commands.setup.subCommands.panel.replies.panelMenu)
+                        .setOptions(array)
+                        .setMaxValues(1)
+                    )
+                )
+              });
+
+            const message = await channel.send({
+              embeds: [embed],
+              components: components
+            });
+
+            await db.set(DatabaseProperties(interaction.guildId!).panel, { channel: channel.id, message: message.id });
+            return await response(interaction, {
+              content: language.commands.setup.subCommands.panel.replies.success.replaceValues({ channel: channel.id })
+            });
+          }
+        }
+
+        case "prefix": {
+          const newPrefix = getOption<string>(interaction, "getString", "input", 1, args);
+          const lastPrefix = await db.get<PrefixDB>(DatabaseProperties(interaction.guildId!).prefix);
+          if (!newPrefix && lastPrefix) {
+            const message = await response(interaction, {
+              embeds: [
+                new EmbedBuilder()
+                  .setColor(EmbedData.color.red.HexToNumber())
+                  .setFooter(
+                    {
+                      text: EmbedData.footer.footerText,
+                      iconURL: EmbedData.footer.footerIcon
+                    }
+                  )
+                  .setTitle(language.replies.error)
+                  .setDescription(`${language.commands.setup.subCommands.prefix.replies.doDeletePrefix.replaceValues({
+                    prefix: lastPrefix
+                  })}`)
+              ],
+              components: [
+                new ActionRowBuilder<ButtonBuilder>()
+                  .addComponents(
+                    new ButtonBuilder()
+                      .setCustomId("setup-accept")
+                      .setEmoji("✅")
+                      .setLabel(language.replies.buttons.buttonYes)
+                      .setStyle(ButtonStyle.Success),
+
+                    new ButtonBuilder()
+                      .setCustomId("setup-cancel")
+                      .setEmoji("❌")
+                      .setLabel(language.replies.buttons.buttonNo)
+                      .setStyle(ButtonStyle.Secondary)
+                  )
+              ]
+            });
+            const collector = message!.createMessageComponentCollector({ time: 60 * 1000, componentType: ComponentType.Button });
+            collector.on("collect", async (button) => {
+              if (button.user.id !== interaction.member!.user.id)
+                return await responseError(
+                  button,
+                  language.commands.help.replies.invalidUser.replaceValues({
+                    mention_command: `</${setup.data.name}:${setup.data?.id}>`,
+                    author: interaction.member?.toString()!
+                  })
+                );
+
+              switch (button.customId) {
+                case "setup-accept": {
+                  await button.deferUpdate();
+                  await db.delete(DatabaseProperties(interaction.guildId!).prefix);
+                  return await button.editReply({
+                    content: language.commands.setup.subCommands.prefix.replies.deletePrefix.replaceValues({ prefix: config.discord.prefix }),
+                    embeds: [],
+                    components: []
+                  });
+                };
+                case "setup-cancel": {
+                  collector.stop();
+                };
+              }
+            });
+            collector.on("end", async () => {
+              return await responseDelete(interaction, message);
+            });
+
+            return;
+          }
+
+          else if (!newPrefix)
+            return await responseError(
+              interaction,
+              language.commands.setup.subCommands.prefix.replies.noPrefix
+            )
+
+          else {
+            await db.set(DatabaseProperties(interaction.guildId!).prefix, newPrefix);
+            return await response(interaction, {
+              content: language.commands.setup.subCommands.prefix.replies.success.replaceValues({ prefix: newPrefix })
+            });
+          }
+        }
+
+        case "language": {
+          const
+            newlanguage = getOption<string>(interaction, "getString", "input") || args!.slice(1).join(" "),
+            firstChoice = Object.keys(languages)
+              .filter(a =>
+                a.startsWith(newlanguage) || languages[a as Languages].toLowerCase().startsWith(newlanguage?.toLowerCase())
+              ).random();
+
+          const lastlanguage = await db.get<LanguageDB>(DatabaseProperties(interaction.guildId!).language);
+          if (!newlanguage && lastlanguage) {
+            const message = await response(interaction, {
+              embeds: [
+                new EmbedBuilder()
+                  .setColor(EmbedData.color.red.HexToNumber())
+                  .setFooter(
+                    {
+                      text: EmbedData.footer.footerText,
+                      iconURL: EmbedData.footer.footerIcon
+                    }
+                  )
+                  .setTitle(language.replies.error)
+                  .setDescription(`${language.commands.setup.subCommands.language.replies.doDeleteLanguage.replaceValues({
+                    language: lastlanguage
+                  })}`)
+              ],
+              components: [
+                new ActionRowBuilder<ButtonBuilder>()
+                  .addComponents(
+                    new ButtonBuilder()
+                      .setCustomId("setup-accept")
+                      .setEmoji("✅")
+                      .setLabel(language.replies.buttons.buttonYes)
+                      .setStyle(ButtonStyle.Success),
+
+                    new ButtonBuilder()
+                      .setCustomId("setup-cancel")
+                      .setEmoji("❌")
+                      .setLabel(language.replies.buttons.buttonNo)
+                      .setStyle(ButtonStyle.Secondary)
+                  )
+              ]
+            });
+            const collector = message!.createMessageComponentCollector({ time: 60 * 1000, componentType: ComponentType.Button });
+            collector.on("collect", async (button) => {
+              if (button.user.id !== interaction.member!.user.id)
+                return await responseError(
+                  button,
+                  language.commands.help.replies.invalidUser.replaceValues({
+                    mention_command: `</${setup.data.name}:${setup.data?.id}>`,
+                    author: interaction.member?.toString()!
+                  })
+                );
+
+              switch (button.customId) {
+                case "setup-accept": {
+                  await button.deferUpdate();
+                  await db.delete(DatabaseProperties(interaction.guildId!).language);
+                  return await button.editReply({
+                    content: language.commands.setup.subCommands.language.replies.deleteLanguage.replaceValues({ language: config.discord.default_language }),
+                    embeds: [],
+                    components: []
+                  });
+                };
+                case "setup-cancel": {
+                  collector.stop();
+                };
+              }
+            });
+            collector.on("end", async () => {
+              return await responseDelete(interaction, message);
+            });
+
+            return;
+          }
+
+          else if (!newlanguage || !firstChoice)
+            return await responseError(
+              interaction,
+              language.commands.setup.subCommands.language.replies.noLanguage.replaceValues({
+                languages: JSON.stringify(Object.values(languages))
+              })
+            )
+
+          else {
+            await db.set(DatabaseProperties(interaction.guildId!).language, firstChoice);
+            return await response(interaction, {
+              content: language.commands.setup.subCommands.language.replies.success.replaceValues({ language: languages[firstChoice as Languages] })
+            });
+          }
         }
 
         default: {
-          if (interaction instanceof Message) {
-            const
-              prefix = config.discord.prefix,
-              embed = new EmbedBuilder()
-                .setTitle(`📋 لیست ساب‌کامندهای ${prefix}${command.data.name}`)
-                .setColor(HexToNumber(EmbedData.color.theme))
-                .setDescription("لطفاً یکی از ساب‌کامندهای زیر را انتخاب کنید:")
-                .setFooter({ text: "برای استفاده از هر ساب‌کامند، دستور مورد نظر را وارد کنید." });
+          const embed = new EmbedBuilder()
+            .setColor(EmbedData.color.theme.HexToNumber())
+            .setTitle("Help | Setup")
+            .setDescription(language.commands.setup.description)
+            .setFooter(
+              {
+                text: `Admin Embed • ${EmbedData.footer.footerText}`
+              }
+            )
+            .setThumbnail(client.user!.displayAvatarURL(
+              {
+                forceStatic: true
+              }
+            ))
+            .setTimestamp();
 
-            command.data.options!.forEach(cmd => {
-              embed.addFields({ name: cmd.name, value: cmd.description });
-            });
-            return await response(interaction, { embeds: [embed], ephemeral: true });
-          }
-
-          else
-            return await responseError(interaction, "ساب‌کامند نامعتبر است. لطفاً از گزینه‌های موجود استفاده کنید.");
-
+          setup.data.options!.forEach(a => {
+            embed.addFields(
+              {
+                name: `\`${prefix}setup ${a.name}\`${a.usage ? ` | ${a.usage}` : ""}:`,
+                value: `\`${language.commands.setup.subCommands[a.name as "panel"].description}\``,
+                inline: true
+              }
+            )
+          });
+          return await response(interaction,
+            {
+              embeds: [embed]
+            }
+          )
         }
       }
-
     } catch (e: any) {
       error(e)
     }
   }
-};
-export default command;
+} as CommandType;
 /**
  * @copyright
  * Code by Sobhan-SRZA (mr.sinre) | https://github.com/Sobhan-SRZA

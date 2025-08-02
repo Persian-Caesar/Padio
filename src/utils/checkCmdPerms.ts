@@ -1,23 +1,20 @@
 import {
   ApplicationCommandOptionType,
-  CommandInteraction,
-  CommandInteractionOptionResolver,
-  EmbedBuilder,
+  ChatInputCommandInteraction,
   GuildChannel,
   GuildMember,
   Message,
-  MessageFlags,
   PermissionsBitField
 } from "discord.js";
 import { CommandType } from "../types/interfaces";
 import DatabaseProperties from "./DatabaseProperties";
 import selectLanguage from "./selectLanguage";
+import responseError from "./responseError";
 import client from "../..";
 import error from "./error";
-import responseError from "./responseError";
 
 export default async function checkCmdPerms(
-  interaction: CommandInteraction | Message,
+  interaction: ChatInputCommandInteraction | Message,
   command: CommandType,
   prefix: string | null = null,
   args: string[] | null = null
@@ -33,12 +30,12 @@ export default async function checkCmdPerms(
           ? ` ${command.data.options.find((a) => a.name === args![0])!.name}`
           : ""
         }\``
-        : `</${command.data.name}${interaction instanceof CommandInteraction && interaction.options?.data.some((a) => a.type === 1)
+        : `</${command.data.name}${interaction instanceof ChatInputCommandInteraction && interaction.options?.data.some((a) => a.type === 1)
           ? ` ${interaction.options.data.find((a) => a.type === 1)!.name}`
           : ""
         }:${command.data.id}>`,
 
-      getSuncommand = interaction instanceof CommandInteraction && interaction.options instanceof CommandInteractionOptionResolver && interaction.options.getSubcommand(),
+      getSuncommand = interaction instanceof ChatInputCommandInteraction && interaction.options && interaction.options.getSubcommand(),
       getSubcommandOptions = getSuncommand && command.data.options?.find(option =>
         option.type === ApplicationCommandOptionType.Subcommand && option.name === getSuncommand
       );

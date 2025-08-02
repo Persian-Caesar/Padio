@@ -1,0 +1,117 @@
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  EmbedBuilder,
+  PermissionsBitField
+} from "discord.js";
+import { CommandType } from "../../types/interfaces";
+import { LanguageDB } from "../../types/database";
+import DatabaseProperties from "../../utils/DatabaseProperties";
+import selectLanguage from "../../utils/selectLanguage";
+import responseEdit from "../../utils/responseEdit";
+import EmbedData from "../../storage/embed";
+import response from "../../utils/response";
+import config from "../../../config";
+import error from "../../utils/error";
+import os from "os";
+
+const defaultLanguage = selectLanguage(config.discord.default_language).commands.ping;
+const ephemeral = selectLanguage(config.discord.default_language).replies.ephemeral;
+
+export default {
+  data: {
+    name: "ping",
+    description: defaultLanguage.description,
+    type: ApplicationCommandType.ChatInput,
+    default_member_permissions: new PermissionsBitField([
+      "SendMessages",
+    ]),
+    default_bot_permissions: new PermissionsBitField([
+      "SendMessages",
+      "EmbedLinks"
+    ]),
+    dm_permission: true,
+    options: [
+      {
+        name: "ephemeral",
+        description: ephemeral.description,
+        type: ApplicationCommandOptionType.String,
+        choices: [
+          {
+            name: ephemeral.choices.yes,
+            value: "true"
+          },
+          {
+            name: ephemeral.choices.no,
+            value: "false"
+          }
+        ],
+        required: false
+      }
+    ]
+  },
+  category: "misc",
+  aliases: ["h", "commands"],
+  cooldown: 10,
+  only_owner: false,
+  only_slash: true,
+  only_message: true,
+
+  run: async (client, interaction, args) => {
+    try {
+      const db = client.db!;
+      const lang = (await db.get<LanguageDB>(DatabaseProperties(interaction.guildId!).language)) || config.discord.default_language;
+      const language = selectLanguage(lang).commands.ping;
+      const embed1 = new EmbedBuilder()
+        .setColor(EmbedData.color.theme.HexToNumber())
+        .setDescription(language.replies.pinging);
+
+      const message = await response(interaction, { embeds: [embed1] });
+
+      const embed2 = new EmbedBuilder()
+        .setColor(EmbedData.color.theme.HexToNumber())
+        .setThumbnail(client.user!.displayAvatarURL({ forceStatic: true }))
+        .setFooter({
+          text: EmbedData.footer.footerText,
+          iconURL: EmbedData.footer.footerIcon,
+        })
+        .setTitle(`${EmbedData.emotes.default.ping} ${language.replies.ping}`)
+        .setFields(
+          [
+            {
+              name: `\u200b`,
+              value: `**${EmbedData.emotes.default.heartbeat}| ${language.replies.values.pinging} \`${Math.round(client.ws.ping)}\` ms**`,
+              inline: true
+            },
+            {
+              name: `\u200b`,
+              value: `**${EmbedData.emotes.default.timer}| ${language.replies.fields.time} \`${Date.now() - interaction.createdTimestamp}\` ms**`,
+              inline: true
+            },
+            {
+              name: `\u200b`,
+              value: `**${EmbedData.emotes.default.uptime}| ${language.replies.fields.uptime} <t:${Math.round(client.readyTimestamp! / 1000)}:D> | <t:${Math.round(client.readyTimestamp! / 1000)}:R>**`,
+              inline: true
+            },
+            {
+              name: `${EmbedData.emotes.default.memory}| ${language.replies.fields.memory}`,
+              value: `${EmbedData.emotes.default.reply} **${Math.round(+((os.totalmem() - os.freemem()) / 1024 / 1024).toFixed(2)).toLocaleString()}/${Math.round(+((os.totalmem()) / 1024 / 1024).toFixed(2)).toLocaleString()} MB | \`${(((os.totalmem() - os.freemem()) / os.totalmem()) * 100).toFixed(2)}%\`**`
+            }
+          ]
+        )
+        .setTimestamp();
+
+      return await responseEdit(interaction, { embeds: [embed2] }, message);
+    } catch (e: any) {
+      error(e)
+    }
+  }
+} as CommandType;
+/**
+ * @copyright
+ * Code by Sobhan-SRZA (mr.sinre) | https://github.com/Sobhan-SRZA
+ * Developed for Persian Caesar | https://github.com/Persian-Caesar | https://dsc.gg/persian-caesar
+ *
+ * If you encounter any issues or need assistance with this code,
+ * please make sure to credit "Persian Caesar" in your documentation or communications.
+ */

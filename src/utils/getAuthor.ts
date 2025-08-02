@@ -1,16 +1,15 @@
-import {
-  CommandInteraction,
-  Message
-} from "discord.js";
+import { isBaseInteraction } from "./interactionTools";
+import { Respondable } from "../types/types";
 import error from "./error";
 
-export default function getAuthor(interaction: CommandInteraction | Message) {
+export default function (interaction: Respondable ) {
   try {
-    if (interaction instanceof CommandInteraction)
+    if (isBaseInteraction(interaction))
       return interaction.user;
 
     else
       return interaction.author;
+
   } catch (e: any) {
     error(e);
   }

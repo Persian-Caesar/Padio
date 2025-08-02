@@ -1,6 +1,6 @@
 import { readdirSync } from "fs";
 import selectLanguage from "../utils/selectLanguage";
-import DiscordClient from "../classes/Client";
+import DiscordClient from "../model/Client";
 import post from "../functions/post";
 
 export default async (client: DiscordClient) => {
@@ -16,7 +16,7 @@ export default async (client: DiscordClient) => {
     };
   }
   post(
-    (await selectLanguage()).replies.loadEvents.replaceValues({
+    selectLanguage().replies.loadEvents.replaceValues({
       count: String(amount).cyan
     }), "S"
   );

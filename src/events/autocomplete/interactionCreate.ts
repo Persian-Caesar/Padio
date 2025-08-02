@@ -1,5 +1,5 @@
 import { AutocompleteInteraction } from "discord.js";
-import DiscordClient from "../../classes/Client";
+import DiscordClient from "../../model/Client";
 import error from "../../utils/error";
 
 export default async (client: DiscordClient, interaction: AutocompleteInteraction) => {

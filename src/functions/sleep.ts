@@ -1,5 +1,5 @@
-export default function HexToNumber(hexColor: string): number {
-  return parseInt(hexColor.replace("#", ""), 16)
+export default function (ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 /**
  * @copyright

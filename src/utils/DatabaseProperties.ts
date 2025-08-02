@@ -1,6 +1,10 @@
 export default function DatabaseProperties(id1: string, id2?: string) {
   return {
-    language: `language.${id1}`
+    language: `language.${id1}`,
+    prefix: `prefix.${id1}`,
+    panel: `radioPanel.${id1}`,
+    customCommand: `commands.${id1}`,
+    afk: `radioAFK.${id1}`
   }
 }
 /**

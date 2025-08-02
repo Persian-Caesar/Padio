@@ -32,23 +32,35 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Adding "toCapitalize" method to String class. | ts type is in ./src/types/string.d.ts
+// Adding "toCapitalize" method to String class. | ts type is in ./src/types/global.d.ts
 String.prototype.toCapitalize = function (): string {
     return String(this).toLowerCase().replace(/\b\w/g, char => char.toUpperCase())
 }
-// Adding "replaceValues" method to String class. | ts type is in ./src/types/string.d.ts
+// Adding "replaceValues" method to String class. | ts type is in ./src/types/global.d.ts
 String.prototype.replaceValues = function (object: Record<string, any>): string {
     let string = String(this);
     Object
         .keys(object)
         .forEach(a => {
-            string = String(this).replace(`{${a}}`, object[a]);
+            string = string.replace(`{${a}}`, object[a]);
         });
 
     return string;
 }
+// Adding "HexToNumber" method to String class. | ts type is in ./src/types/global.d.ts
+String.prototype.HexToNumber = function (): number {
+    return parseInt(this.replace("#", ""), 16)
+}
+// Adding "convertToPersianString" method to String class. | ts type is in ./src/types/global.d.ts
+String.prototype.convertToPersianString = function (): string {
+    return this.replace(/\d+/g, (match) => {
+        const number = parseInt(match, 10);
 
-// Adding "random" method to Array class. | ts type is in ./src/types/array.d.ts
+        return number.toLocaleString("fa-IR");
+    });
+}
+
+// Adding "random" method to Array class. | ts type is in ./src/types/global.d.ts
 Array.prototype.random = function () {
     const array = Array.from(this);
     return array[Math.floor(Math.random() * array.length)]
@@ -63,33 +75,23 @@ Array.prototype.chunk = function (size) {
     return result;
 }
 
-import {
-    readdirSync,
-    readFileSync
-} from "fs";
-import { PackageJson } from "./src/types/interfaces";
-import DiscordClient from "./src/classes/Client";
-import * as dotenv from "dotenv";
+import { readdirSync } from "fs";
+import DiscordClient from "./src/model/Client";
+import packageJSON from "./package.json";
 import error from "./src/utils/error";
 import post from "./src/functions/post";
 
 // Add color to console messages.
 import "colors";
-
-// Support .env args
-dotenv.config();
+import Database from "./src/model/Database";
 
 // Load discord client
-const
-    client = new DiscordClient(),
-    handle = readdirSync(__dirname + "/src/handlers").filter(file => file.endsWith(".js")),
-    packageJSON: PackageJson = JSON.parse(readFileSync("./package.json", "utf8"));
+const client = new DiscordClient();
+const handle = readdirSync(__dirname + "/src/handlers").filter(file => file.endsWith(".js"));
 
 // Login 
 const main = async () => {
     try {
-        // Load Handlers 
-        let amount = 0;
         post(
             "Welcome to ".cyan + (packageJSON.name).blue + "! | Version: ".cyan + (packageJSON.version).blue + "\n" +
             "Coded By ".cyan + ("Sobhan-SRZA").yellow + " & ".cyan + ("Persian Caesar").yellow + " With ".cyan + ("❤️").red + "\n" +
@@ -99,12 +101,31 @@ const main = async () => {
             "cyan"
         );
         post("Logging into the BOT...", "S");
+
+        // Initialize QuickDB
+        post("Loading database...", "S")
+        const databaseFile = await import("./src/utils/database");
+        const loadDB = databaseFile.default || databaseFile;
+        const database = await loadDB();
+
+        if (database) {
+            client.db = new Database(database.db);
+            post(
+                `Database Is Successfully Activated!! (Type: ${database.dbType})`,
+                "S"
+            );
+            post("Database was loaded!", "D")
+        }
+
+        // Load Handlers 
+        let amount = 0;
         for (const file of handle) {
             const handlerFile = await import(`./src/handlers/${file}`);
             const handler = handlerFile.default || handlerFile;
             await handler(client);
             amount++;
         }
+
         post((String(amount)).cyan + " Handler Is Loaded!!".green, "S");
         if (client.token)
             await client

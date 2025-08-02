@@ -7,13 +7,12 @@ import {
 import { CommandType } from "../types/interfaces";
 import Database from "./Database";
 import config from "../../config";
-import post from "../functions/post";
 
 export default class DiscordClient extends Client {
-    commands: Collection<string, CommandType>;
-    cooldowns: Collection<string, Collection<string, number>>;
-    config: typeof config;
-    db: Database | null;
+    public commands: Collection<string, CommandType>;
+    public cooldowns: Collection<string, Collection<string, number>>;
+    public config: typeof config;
+    public db: Database | null = null;
     constructor(options?: ClientOptions) {
         if (!options)
             options = {
@@ -41,31 +40,6 @@ export default class DiscordClient extends Client {
         this.cooldowns = new Collection();
         this.config = config;
         this.token = this.config.discord.token;
-
-        // initialize QuickDB
-        this.db = null;
-        this.setDB();
-
-        // initialize player map
-        // players: Map<string, MusicPlayer>;
-        // this.players = new Map<string, MusicPlayer>();
-    }
-
-    private async setDB() {
-        const
-            databaseFile = await import("../utils/database"),
-            loadDB = databaseFile.default || databaseFile,
-            { db, dbType } = (await loadDB())!;
-
-        if (db) {
-            post(
-                `Database Is Successfully Activated!! (Type: ${dbType})`,
-                "S"
-            );
-            this.db = new Database(db);
-        }
-
-        return this;
     }
 }
 /**

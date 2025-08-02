@@ -1,5 +1,4 @@
 import { AttachmentBuilder, EmbedBuilder, WebhookClient, WebhookMessageCreateOptions } from "discord.js";
-import HexToNumber from "../functions/HexToNumber";
 import EmbedData from "../storage/embed";
 import config from "../../config";
 import post from "../functions/post";
@@ -22,7 +21,7 @@ export default function error(error: any) {
           }
         ),
         embed = new EmbedBuilder()
-          .setColor(HexToNumber(EmbedData.color.theme))
+          .setColor(EmbedData.color.theme.HexToNumber())
           .setAuthor(
             {
               name: `${error.message}`

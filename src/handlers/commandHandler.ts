@@ -1,7 +1,7 @@
 import selectLanguage from "../utils/selectLanguage";
 import { CommandType } from "../types/interfaces";
 import { readdirSync } from "fs";
-import DiscordClient from "../classes/Client";
+import DiscordClient from "../model/Client";
 import error from "../utils/error";
 import post from "../functions/post";
 
@@ -11,7 +11,7 @@ export default async (client: DiscordClient) => {
         commandTypes.forEach(async (type) => {
             await loadCommand(`${process.cwd()}/dist/src/commands`, type, client.commands);
             post(
-                (await selectLanguage()).replies.loadCommands.replaceValues({
+                selectLanguage().replies.loadCommands.replaceValues({
                     cmdCount: (client.commands.filter(a => a[type]).size).toString().cyan,
                     type: type.replace("only_", "").toCapitalize()
                 }), "S");
@@ -36,7 +36,7 @@ async function loadCommand(dirname: string, type: "only_slash" | "only_message",
 
                 else {
                     post(
-                        `${type.replace("only_", "").toCapitalize()} ${(await selectLanguage()).replies.loadCommandError} ${file}`,
+                        `${type.replace("only_", "").toCapitalize()} ${selectLanguage().replies.loadCommandError} ${file}`,
                         "E",
                         "red",
                         "red"

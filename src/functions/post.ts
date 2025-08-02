@@ -2,7 +2,7 @@ import error from "../utils/error";
 
 type Color = "strip" | "stripColors" | "black" | "red" | "green" | "yellow" | "blue" | "magenta" | "cyan" | "white" | "gray" | "grey" | "bgBlack" | "bgRed" | "bgGreen" | "bgYellow" | "bgBlue" | "bgMagenta" | "bgCyan" | "bgWhite" | "reset" | "bold" | "dim" | "italic" | "underline" | "inverse" | "hidden" | "strikethrough" | "rainbow" | "zebra" | "america" | "trap" | "random" | "zalgo";
 
-export default function post(data: any, name: string, color1?: Color, color2?: Color) {
+export default function (data: any, name: string, color1?: Color, color2?: Color) {
   try {
     const dataColor = color1 || "yellow";
     const textColor = color2 || "green";

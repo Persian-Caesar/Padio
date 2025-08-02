@@ -1,4 +1,5 @@
 import {
+    ActivityType,
     ApplicationCommandOptionType,
     ApplicationCommandType,
     ChannelType,
@@ -6,13 +7,16 @@ import {
     Guild,
     Message,
     PermissionsBitField,
+    PresenceStatusData,
     TextChannel
 } from "discord.js";
 import {
     Categoris,
-    CommandOptions
+    CommandOptions,
+    ConfigDatabaseTypes,
+    Languages
 } from "./types";
-import DiscordClient from "../classes/Client";
+import DiscordClient from "../model/Client";
 
 export interface SendGuildAlert {
     client: DiscordClient,
@@ -39,6 +43,7 @@ export interface CommandOption {
     choices?: Array<{ name: string, value: string }>;
     default_member_permissions?: PermissionsBitField;
     default_bot_permissions?: PermissionsBitField;
+    usage?: string;
 }
 
 export interface CommandType {
@@ -334,6 +339,55 @@ export interface Language {
                 "joinButton": string | "Join {guild}"
             }
         }
+    }
+}
+
+export interface ConfigType {
+    source: {
+        anti_crash: boolean, // Anticrash on or off
+        database: {
+            type: ConfigDatabaseTypes, // Choose one type for save users and guilds data. Types: "mysql" | "sql" | "mongodb" | "json"
+            mongoURL: string, // If you choose "mongodb" type place your mongo url.
+            mysql: {
+                host: string, // Place your Mysql server host name.
+                user: string, // Place your Mysql server username.
+                password: string, // Place your Mysql server password.
+                database: string // Place your Mysql server database name.
+            } // If you choose "mysql" type place your Mysql server information.
+        }
+    },
+    discord: {
+        default_language: Languages, // Bot default language in discord.
+        one_guild: boolean, // One Guild on or off
+        delete_commands: boolean, // Delete slash commands each time you run the source.
+        status_loop: number, // Bot status loop. (By default it's every 30 seconds)
+        token: string, // Bot token.
+        prefix: string, // Bot message command prefix.
+        status: {
+            activity: string[], // Set bot status activity, you can change it. | You can use "{members}" variable to shows bot all users or {servers} to shows counts of all servers bot joined.
+            type: (keyof typeof ActivityType)[], // Set bot status type and it"s can be: "Competing" | "Listening" | "Playing" | "Streaming" | "Watching" | "Custom"
+            presence: PresenceStatusData[] // Set bot status presence and it"s can be: "online" | "dnd" | "idle" | "offline"
+        },
+        noperms_invite: string, // Discord bot invite link with no permission.
+        admin_invite: string, // Discord bot invite link with administrator permission.
+        default_invite: string, // Discord bot invite link with recommended permission.
+        support: {
+            invite: string, // Support server invite link.
+            id: string, // Support server Id.
+            stats_channel: string, // Id of  channel to send bot stats on discord.
+            webhook: {
+                url: string, // Webhook logger url.
+                avatar: string, // Webhook logger avatar.
+                username: string, // Webhook logger username.
+                threads: {
+                    status: string, // Id of thread for webhook to bot status alerts.
+                    bugs: string, // Id of thread for webhook to send console errors.
+                    report: string // Id of thread for webhook to send users report messages.
+                }
+            },
+            owners: string[] // Source owners.
+        },
+        discordbotlist: string // Addess of bot discordbotlist page.
     }
 }
 /**

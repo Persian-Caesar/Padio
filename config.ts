@@ -1,11 +1,14 @@
+import { ConfigType } from "./src/types/interfaces";
+import { config } from "dotenv";
+
+// Support .env args
+config();
+
 export default {
     source: {
-        default_language: process.env.default_language || "en", // Bot default language in discord.
         anti_crash: process.env.anti_crash === "true" ? true : false || false, // Anticrash on or off
-        one_guild: process.env.one_guild === "true" ? true : false || false, // One Guild on or off
-        logger: process.env.logger === "true" ? true : false || false, // Webhook logger on or off
         database: {
-            type: process.env.database_type || "json", // Choose one type for save users and guilds data. Types: "mysql" | "sql" | "mongodb" | "json"
+            type: process.env.database_type || "", // Choose one type for save users and guilds data. Types: "mysql" | "sql" | "mongodb" | "json"
             mongoURL: process.env.database_mongoURL || "", // If you choose "mongodb" type place your mongo url.
             mysql: {
                 host: process.env.database_msql_host || "", // Place your Mysql server host name.
@@ -16,6 +19,10 @@ export default {
         }
     },
     discord: {
+        default_language: process.env.default_language || "en", // Bot default language in discord.
+        one_guild: process.env.one_guild === "true" ? true : false || false, // One Guild on or off
+        delete_commands: process.env.delete_commands === "true" ? true : false || false, // Delete slash commands each time you run the source.
+        status_loop: parseInt(process.env.status_loop_count!) || 30 * 1000, // Bot status loop. (By default it's every 30 seconds)
         token: process.env.token || "", // Bot token.
         prefix: process.env.prefix || "", // Bot message command prefix.
         status: {
@@ -44,7 +51,7 @@ export default {
         },
         discordbotlist: "https://discordbotlist.com/bots/padio" // Addess of bot discordbotlist page.
     }
-};
+} as ConfigType;
 /**
  * @copyright
  * Code by Sobhan-SRZA (mr.sinre) | https://github.com/Sobhan-SRZA

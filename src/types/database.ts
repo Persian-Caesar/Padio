@@ -1,11 +1,7 @@
-export { }
-
-declare global {
-    interface String {
-        replaceValues(object: Record<string, any>): string;
-        toCapitalize(): string;
-    }
-}
+export interface PanelDB { channel: string; message: string; }
+export type PrefixDB = string;
+export type LanguageDB = string;
+export type afkDB = string;
 /**
  * @copyright
  * Code by Sobhan-SRZA (mr.sinre) | https://github.com/Sobhan-SRZA

@@ -4,7 +4,7 @@ import {
 } from "discord.js";
 import checkCmdCooldown from "../../utils/checkCmdCooldown";
 import checkCmdPerms from "../../utils/checkCmdPerms";
-import DiscordClient from "../../classes/Client";
+import DiscordClient from "../../model/Client";
 import error from "../../utils/error";
 import repeatAction from "../../utils/repeatAction";
 

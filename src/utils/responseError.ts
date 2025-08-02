@@ -5,19 +5,16 @@ import {
   Message,
   MessageEditOptions,
   MessageFlags,
-  MessagePayload,
-  MessagePayloadOption,
   MessageReplyOptions
 } from "discord.js";
-import { isBaseInteraction } from "../functions/functions";
+import { isBaseInteraction } from "./interactionTools";
 import { Respondable } from "../types/types";
-import repeatAction from "./repeatAction";
-import HexToNumber from "../functions/HexToNumber";
-import EmbedData from "../storage/embed";
-import error from "./error";
-import client from "../..";
 import selectLanguage from "./selectLanguage";
+import repeatAction from "./repeatAction";
+import EmbedData from "../storage/embed";
 import config from "../../config";
+import client from "../..";
+import error from "./error";
 
 export default async function responseError(
   interaction: Respondable,
@@ -32,14 +29,14 @@ export default async function responseError(
       databaseNames = {
         language: `language.${interaction.guildId}`
       },
-      lang = await db.has(databaseNames.language) ? await db.get(databaseNames.language) : config.source.default_language,
-      language = await selectLanguage(lang);
+      lang = (await db.get<string>(databaseNames.language)) || config.discord.default_language,
+      language = selectLanguage(lang);
 
     if (!data)
       data = {
         embeds: [
           new EmbedBuilder()
-            .setColor(HexToNumber(EmbedData.color.red))
+            .setColor(EmbedData.color.red.HexToNumber())
             .setFooter(
               {
                 text: EmbedData.footer.footerText,

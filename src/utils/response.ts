@@ -1,21 +1,22 @@
 import {
+  InteractionEditReplyOptions,
   InteractionReplyOptions,
   MessageReplyOptions
 } from "discord.js";
-import { isBaseInteraction } from "../functions/functions";
+import { isBaseInteraction } from "./interactionTools";
 import { Respondable } from "../types/types";
 import repeatAction from "./repeatAction";
 import error from "./error";
 
-export default async function response(interaction: Respondable, data: InteractionReplyOptions | MessageReplyOptions) {
+export default async function response(interaction: Respondable, data: InteractionReplyOptions | InteractionEditReplyOptions | MessageReplyOptions) {
   try {
     if (isBaseInteraction(interaction)) {
       if ("editReply" in interaction)
-        return await repeatAction(async () =>  await interaction.editReply(data as InteractionReplyOptions));
+        return await repeatAction(async () => await interaction.editReply(data as InteractionEditReplyOptions));
     }
 
     else
-      return await repeatAction(async () =>  await interaction.reply(data as MessageReplyOptions));
+      return await repeatAction(async () => await interaction.reply(data as MessageReplyOptions));
 
   } catch (e: any) {
     error(e);

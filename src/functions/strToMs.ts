@@ -1,4 +1,4 @@
-export default function strToMs(input: string) { 
+export default function (input: string) { 
   const match = input.match(/^(\d+)(s|m|h|d)$/);
   if (!match)
     return null;

@@ -1,22 +1,37 @@
 import {
- BaseInteraction,
- CommandInteraction,
- Message,
- MessageComponentInteraction,
- ModalSubmitInteraction
+    ActivityType,
+    BaseInteraction,
+    ChatInputCommandInteraction,
+    CommandInteraction,
+    Message,
+    MessageComponentInteraction,
+    ModalSubmitInteraction
 } from "discord.js";
 import { CommandOption } from "./interfaces";
 
 export type CommandOptions = CommandOption[] | [];
 
-export type Categoris = "member" | "admin" | "music" | "owner" | "nsfw" | "moderate" | "ticket" | "giveaway" | "api" | "image";
+export type Categoris = "misc" | "admin" | "music" | "owner";
 
 export type Respondable =
- | CommandInteraction
- | MessageComponentInteraction
- | ModalSubmitInteraction
- | BaseInteraction
- | Message;
+    | CommandInteraction
+    | ChatInputCommandInteraction
+    | MessageComponentInteraction
+    | ModalSubmitInteraction
+    | BaseInteraction
+    | Message;
+
+export type Languages = "en" | "jp" | "per" | "th" | "tr" | "zh";
+
+
+export type ConfigDatabaseTypes = "mysql"
+    | "sql"
+    | "mongodb"
+    | "json";
+
+export type StatusActivityType = (keyof typeof ActivityType);
+
+export type EnvBoolean = "true" | "false";
 /**
  * @copyright
  * Code by Sobhan-SRZA (mr.sinre) | https://github.com/Sobhan-SRZA

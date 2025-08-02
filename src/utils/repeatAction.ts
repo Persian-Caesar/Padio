@@ -1,6 +1,11 @@
+import sleep from "../functions/sleep";
 import error from "./error";
 
-export default async function repeatAction<T>(action: () => Promise<T>, maxAttempts = 3): Promise<T | undefined> {
+export default async function <T>(
+  action: () => Promise<T>,
+  maxAttempts = 3,
+  delayMs = 1500
+): Promise<T | undefined> {
   let attempts = 0;
 
   while (attempts < maxAttempts) {
@@ -10,6 +15,9 @@ export default async function repeatAction<T>(action: () => Promise<T>, maxAttem
       attempts++;
       if (attempts === maxAttempts)
         error(e);
+
+      else
+        await sleep(delayMs);
     }
   }
 }

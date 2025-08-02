@@ -6,7 +6,6 @@ import {
   WebhookMessageCreateOptions
 } from "discord.js";
 import { SendGuildAlert } from "../types/interfaces";
-import HexToNumber from "../functions/HexToNumber";
 import EmbedData from "../storage/embed";
 import GetInvite from "./GetInvite";
 import config from "../../config";
@@ -66,7 +65,12 @@ export default async function SendGuildAlert({
           }
         ]
       )
-      .setColor(HexToNumber(isLeaved ? EmbedData.color.redlight : EmbedData.color.greenlight || EmbedData.color.theme))
+      .setColor(
+        (isLeaved ?
+          EmbedData.color.redlight : EmbedData.color.greenlight
+          || EmbedData.color.theme)
+          .HexToNumber()
+      )
       .setThumbnail(guild.iconURL({ forceStatic: true }))
       .setFooter(
         {
