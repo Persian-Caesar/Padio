@@ -3,7 +3,7 @@ import { Language } from "../types/interfaces";
 import selectLanguage from "./selectLanguage";
 import DiscordClient from "../model/Client";
 import packageJson from "../../package.json";
-import EmbedData from "../storage/embed";
+import EmbedData from "../storage/EmbedData";
 import config from "../../config";
 import error from "./error";
 import os from "os";

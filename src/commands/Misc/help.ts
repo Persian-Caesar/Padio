@@ -27,7 +27,7 @@ import selectLanguage from "../../utils/selectLanguage";
 import responseError from "../../utils/responseError";
 import responseEdit from "../../utils/responseEdit";
 import getAuthor from "../../utils/getAuthor";
-import EmbedData from "../../storage/embed";
+import EmbedData from "../../storage/EmbedData";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
@@ -80,11 +80,12 @@ export default {
       const category = new Map<string, string>();
       const menu_options: SelectMenuComponentOptionData[] = [];
       const db = client.db!;
-      const lang = (await db.get<LanguageDB>(DatabaseProperties(interaction.guildId!).language)) || config.discord.default_language;
+      const database = DatabaseProperties(interaction.guildId!);
+      const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
       const language = selectLanguage(lang);
       const author = getAuthor(interaction)!;
       const onlyOwner = client.commands.filter(a => a.only_owner);
-      const prefix = (await db.get<PrefixDB>(DatabaseProperties(interaction.guildId!).prefix)) || config.discord.prefix;
+      const prefix = (await db.get<PrefixDB>(database.prefix)) || config.discord.prefix;
       const help = client.commands.get("help")!;
       const embed = new EmbedBuilder()
         .setAuthor({

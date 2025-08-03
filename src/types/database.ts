@@ -2,6 +2,7 @@ export interface PanelDB { channel: string; message: string; }
 export type PrefixDB = string;
 export type LanguageDB = string;
 export type afkDB = string;
+export type stationDB = string;
 /**
  * @copyright
  * Code by Sobhan-SRZA (mr.sinre) | https://github.com/Sobhan-SRZA

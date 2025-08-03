@@ -11,7 +11,7 @@ import { isBaseInteraction } from "./interactionTools";
 import { Respondable } from "../types/types";
 import selectLanguage from "./selectLanguage";
 import repeatAction from "./repeatAction";
-import EmbedData from "../storage/embed";
+import EmbedData from "../storage/EmbedData";
 import config from "../../config";
 import client from "../..";
 import error from "./error";

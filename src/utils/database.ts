@@ -16,7 +16,7 @@ export default async () => {
 
             case "mysql": {
                 const { MySQLDriver } = await import("quick.db");
-                
+
                 driver = new MySQLDriver(config.source.database.mysql)
                 break;
             }

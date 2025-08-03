@@ -2,7 +2,7 @@ import { QuickDB } from "quick.db";
 
 interface DatabaseMethods<T = any> {
   has(name: string): Promise<boolean>;
-  get<T>(name: string): Promise<T | false>;
+  get<T>(name: string): Promise<T | undefined>;
   set<T>(name: string, input: T): Promise<T>;
   delete(name: string): Promise<number>;
 }
@@ -21,7 +21,7 @@ export default class implements DatabaseMethods {
   }
 
   async get<T>(name: string) {
-    return (await this.db.get(name)) as T || false;
+    return (await this.db.get(name)) as T || undefined;
   }
 
   async set<T>(name: string, input: T) {

@@ -20,7 +20,7 @@ import { CommandType } from "../../types/interfaces";
 import { MusicPlayer } from "@persian-caesar/discord-player";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import selectLanguage from "../../utils/selectLanguage";
-import EmbedData from "../../storage/embed";
+import EmbedData from "../../storage/EmbedData";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
@@ -82,7 +82,8 @@ export default {
   run: async (client, interaction, args) => {
     try {
       const db = client.db!;
-      const lang = (await db.get<LanguageDB>(DatabaseProperties(interaction.guildId!).language)) || config.discord.default_language;
+      const database = DatabaseProperties(interaction.guildId!);
+      const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
       const language = selectLanguage(lang).commands.afk;
 
       const memberChannelId = (interaction.member as GuildMember)?.voice?.channel,
@@ -93,7 +94,7 @@ export default {
       if (!channel && memberChannelId)
         channel = (interaction.member as GuildMember)?.voice?.channel as VoiceChannel;
 
-      const afkChannel = await db.get<afkDB>(DatabaseProperties(interaction.guildId!).afk);
+      const afkChannel = await db.get<afkDB>(database.afk);
       if (!channel && afkChannel) {
         const message = (await response(
           interaction,
@@ -147,7 +148,7 @@ export default {
           switch (button.customId) {
             case "afk-accept": {
               await button.deferUpdate();
-              await db.delete(DatabaseProperties(interaction.guildId!).afk);
+              await db.delete(database.afk);
               return await button.editReply({
                 content: language.replies.deleteChannel,
                 embeds: [],
@@ -178,7 +179,7 @@ export default {
           language.replies.noPlayerError
         );
 
-      await db.set(DatabaseProperties(interaction.guildId!).afk, channel!.id);
+      await db.set(database.afk, channel!.id);
       return await response(interaction, {
         content: language.replies.success.replaceValues({
           channel: channel?.toString()!

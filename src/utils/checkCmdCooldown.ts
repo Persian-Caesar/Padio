@@ -1,8 +1,9 @@
 import {
   Collection,
-  ChatInputCommandInteraction,
-  Message
+  ChatInputCommandInteraction
 } from "discord.js";
+import { isBaseInteraction } from "./interactionTools";
+import { Respondable } from "../types/types";
 import { CommandType } from "../types/interfaces";
 import DatabaseProperties from "./DatabaseProperties";
 import selectLanguage from "./selectLanguage";
@@ -12,7 +13,7 @@ import client from "../../index";
 import error from "./error";
 
 export default async function checkCmdCooldown(
-  interaction: ChatInputCommandInteraction | Message,
+  interaction: Respondable,
   command: CommandType,
   prefix: string | null = null,
   args: string[] | null = null
@@ -20,10 +21,10 @@ export default async function checkCmdCooldown(
   try {
     const
       db = client.db!,
-      userId = (interaction instanceof ChatInputCommandInteraction ? interaction.user.id : interaction.author?.id),
+      userId = (isBaseInteraction(interaction ) ? interaction.user.id : interaction.author?.id),
       databaseNames = DatabaseProperties(interaction.guildId!),
-      lang = (await db.get<string>(databaseNames.language))||config.discord.default_language,
-      language =  selectLanguage(lang).replies,
+      lang = (await db.get<string>(databaseNames.language)) || config.discord.default_language,
+      language = selectLanguage(lang).replies,
       mentionCommand = prefix
         ? `\`${prefix + command.data.name}${command.data.options?.some((a) => a.type === 1 && a.name === args?.[0])
           ? ` ${command.data.options.find((a) => a.name === args![0])!.name}`

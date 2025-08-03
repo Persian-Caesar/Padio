@@ -1,36 +1,35 @@
 import {
-  ActionRowBuilder,
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  ButtonBuilder,
-  ButtonStyle,
-  EmbedBuilder,
+  GuildMember,
   PermissionsBitField
 } from "discord.js";
 import { CommandType } from "../../types/interfaces";
+import { MusicPlayer } from "@persian-caesar/discord-player";
 import { LanguageDB } from "../../types/database";
 import DatabaseProperties from "../../utils/DatabaseProperties";
-import statusEmbedBuilder from "../../utils/statusEmbedBuilder";
+import checkPlayerPerms from "../../utils/checkPlayerPerms";
 import selectLanguage from "../../utils/selectLanguage";
-import EmbedData from "../../storage/EmbedData";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
 
-const defaultLanguage = selectLanguage(config.discord.default_language).commands.about;
+const defaultLanguage = selectLanguage(config.discord.default_language).commands.pause;
 const ephemeral = selectLanguage(config.discord.default_language).replies.ephemeral;
 
 export default {
   data: {
-    name: "about",
+    name: "pause",
     description: defaultLanguage.description,
     type: ApplicationCommandType.ChatInput,
     default_member_permissions: new PermissionsBitField([
-      "SendMessages",
+      "SendMessages"
     ]),
     default_bot_permissions: new PermissionsBitField([
       "SendMessages",
-      "EmbedLinks"
+      "EmbedLinks",
+      "Connect",
+      "Speak"
     ]),
     dm_permission: true,
     options: [
@@ -52,9 +51,9 @@ export default {
       }
     ]
   },
-  category: "misc",
-  aliases: ["h", "commands"],
-  cooldown: 10,
+  category: "music",
+  cooldown: 5,
+  aliases: ["pe"],
   only_owner: false,
   only_slash: true,
   only_message: true,
@@ -64,24 +63,18 @@ export default {
       const db = client.db!;
       const database = DatabaseProperties(interaction.guildId!);
       const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
-      const language = selectLanguage(lang);
-      const embed = await statusEmbedBuilder(client, language);
-      const embeds = [EmbedBuilder.from(embed!)];
+      const language = selectLanguage(lang).commands.pause;
 
-      const components = [
-        new ActionRowBuilder<ButtonBuilder>()
-          .addComponents(
-            new ButtonBuilder()
-              .setEmoji(EmbedData.emotes.default.update)
-              .setCustomId("botUpdates")
-              .setLabel(language.replies.buttons.update)
-              .setStyle(ButtonStyle.Primary)
-          )
-      ];
+      // Check perms
+      if (await checkPlayerPerms(interaction))
+        return;
+
+      // Pause Player
+      const queue = new MusicPlayer((interaction.member as GuildMember).voice.channel!);
+      queue.pause();
 
       return await response(interaction, {
-        embeds,
-        components
+        content: language.replies.paused
       });
     } catch (e: any) {
       error(e)

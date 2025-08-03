@@ -12,7 +12,7 @@ import {
   User
 } from "discord.js";
 import { Respondable } from "../types/types";
-import EmbedData from "../storage/embed";
+import EmbedData from "../storage/EmbedData";
 
 export function isBaseInteraction(obj: Respondable): obj is BaseInteraction {
   return obj instanceof BaseInteraction;

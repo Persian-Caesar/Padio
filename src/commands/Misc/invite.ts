@@ -11,7 +11,7 @@ import { CommandType } from "../../types/interfaces";
 import { LanguageDB } from "../../types/database";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import selectLanguage from "../../utils/selectLanguage";
-import EmbedData from "../../storage/embed";
+import EmbedData from "../../storage/EmbedData";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";

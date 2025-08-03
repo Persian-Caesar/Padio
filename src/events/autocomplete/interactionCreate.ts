@@ -1,5 +1,6 @@
 import { AutocompleteInteraction } from "discord.js";
 import DiscordClient from "../../model/Client";
+import radiostation from "../../storage/radiostation.json";
 import error from "../../utils/error";
 
 export default async (client: DiscordClient, interaction: AutocompleteInteraction) => {
@@ -8,19 +9,19 @@ export default async (client: DiscordClient, interaction: AutocompleteInteractio
       return;
 
     switch (interaction.commandName) {
-      case "role": {
-        const
-          roles = interaction.guild?.roles?.cache?.toJSON(),
-          mappedRoles = roles?.sort((a, b) => b.position - a.position)?.map(a => {
-            return { name: a.name, value: a.position.toString() }
-          }),
-          focusedValue = interaction.options.getFocused(),
-          firstChoice = mappedRoles?.filter(a => a.name.toLowerCase().startsWith(focusedValue.toLowerCase()));
+      case "play": {
+        const choices = Object.keys(radiostation)
+          .map((a) => JSON.stringify({
+            name: `${a}`,
+            value: `${a}`
+          }))
+          .map(a => JSON.parse(a));
 
-        if (firstChoice)
-          return await interaction.respond(firstChoice.slice(0, 25)).catch(a => a);
+        const focusedValue = interaction.options.getFocused();
+        const firstChoice = choices.filter(a => a.name.toLowerCase().startsWith(focusedValue.toLowerCase()));
+        await interaction.respond(firstChoice.slice(0, 25)).catch(a => a);
 
-        return;
+        break;
       }
     }
   } catch (e: any) {

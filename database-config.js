@@ -34,6 +34,9 @@ async function saveDataFromMongo() {
 saveDataFromMongo()
 /**
  * @copyright
- * Coded by Sobhan-SRZA and Aria Fendereski | https://github.com/Sobhan-SRZA | https://github.com/ariafi
- * Teams: Persian Caesar, HyCom, Vixium Team | https://discord.gg/xh2S2h67UW | https://discord.gg/wEZmuzRQPp | https://discord.gg/vefvUNyPQu
+ * Code by Sobhan-SRZA (mr.sinre) | https://github.com/Sobhan-SRZA
+ * Developed for Persian Caesar | https://github.com/Persian-Caesar | https://dsc.gg/persian-caesar
+ *
+ * If you encounter any issues or need assistance with this code,
+ * please make sure to credit "Persian Caesar" in your documentation or communications.
  */

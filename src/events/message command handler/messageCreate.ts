@@ -3,27 +3,41 @@ import {
     Message,
     TextChannel
 } from "discord.js";
+import { PrefixDB } from "../../types/database";
+import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkCmdCooldown from "../../utils/checkCmdCooldown";
+import selectLanguage from "../../utils/selectLanguage";
 import checkCmdPerms from "../../utils/checkCmdPerms";
 import DiscordClient from "../../model/Client";
 import error from "../../utils/error";
+import config from "../../../config";
 
 export default async (client: DiscordClient, message: Message) => {
     try {
         const db = client.db!;
+        const database = DatabaseProperties(message.guildId!);
+        const lang = (await db.get<string>(database.language)) || config.discord.default_language;
+        const language = selectLanguage(lang).replies;
+
+        // Filter uncatched messages
+        if (!message) return;
 
         // Filter dm channels
         if (message.channel.type === ChannelType.DM) return;
 
+        // Filter all guilds
+        if (config.discord.one_guild && message.guildId !== config.discord.support.id)
+            return;
+
         // Filter webhooks
-        if (!message || message?.webhookId) return;
+        if (message?.webhookId) return;
 
         // Filter the bots
         if (message.author?.bot) return;
 
         // Command Prefix & args
         const
-            stringPrefix = `${client.config.discord.prefix}`,
+            stringPrefix = (await db.get<PrefixDB>(database.prefix)) || `${config.discord.prefix}`,
             prefixRegex = new RegExp(
                 `^(<@!?${client.user!.id}>|${stringPrefix.toString().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})\\s*`
             );
@@ -41,7 +55,9 @@ export default async (client: DiscordClient, message: Message) => {
         if (!commandName) {
             if (prefix.startsWith("<@")) {
                 return await message.reply({
-                    content: `پریفیکس ربات: \`${stringPrefix}\` | \`${stringPrefix}help\``,
+                    content: language.sendPrefix.replaceValues({
+                        prefix: stringPrefix
+                    })
                 });
             }
             return;

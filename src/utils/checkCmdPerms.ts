@@ -3,10 +3,11 @@ import {
   ChatInputCommandInteraction,
   GuildChannel,
   GuildMember,
-  Message,
   PermissionsBitField
 } from "discord.js";
 import { CommandType } from "../types/interfaces";
+import { Respondable } from "../types/types";
+import { LanguageDB } from "../types/database";
 import DatabaseProperties from "./DatabaseProperties";
 import selectLanguage from "./selectLanguage";
 import responseError from "./responseError";
@@ -14,7 +15,7 @@ import client from "../..";
 import error from "./error";
 
 export default async function checkCmdPerms(
-  interaction: ChatInputCommandInteraction | Message,
+  interaction: Respondable,
   command: CommandType,
   prefix: string | null = null,
   args: string[] | null = null
@@ -23,8 +24,8 @@ export default async function checkCmdPerms(
     const
       db = client.db!,
       databaseNames = DatabaseProperties(interaction.guildId!),
-      lang = await db.get(databaseNames.language),
-      language = (await selectLanguage(lang)).replies,
+      lang = await db.get<LanguageDB>(databaseNames.language),
+      language = selectLanguage(lang).replies,
       mentionCommand = prefix
         ? `\`${prefix + command.data.name}${command.data.options?.some((a) => a.type === 1 && a.name === args?.[0])
           ? ` ${command.data.options.find((a) => a.name === args![0])!.name}`

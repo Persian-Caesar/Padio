@@ -7,13 +7,19 @@ import checkCmdPerms from "../../utils/checkCmdPerms";
 import DiscordClient from "../../model/Client";
 import error from "../../utils/error";
 import repeatAction from "../../utils/repeatAction";
+import DatabaseProperties from "../../utils/DatabaseProperties";
+import config from "../../../config";
+import selectLanguage from "../../utils/selectLanguage";
 
 export default async (client: DiscordClient, interaction: Interaction) => {
   try {
     const db = client.db!;
+    const database = DatabaseProperties(interaction.guildId!);
+    const lang = (await db.get<string>(database.language)) || config.discord.default_language;
+    const language = selectLanguage(lang).replies;
 
     // Load Slash Commands
-    if (interaction.isCommand()) {
+    if (interaction.isChatInputCommand()) {
       const command = client.commands.get(interaction.commandName);
 
       // Command Handler
@@ -26,7 +32,7 @@ export default async (client: DiscordClient, interaction: Interaction) => {
           if (!client.config.discord.support.owners.includes(interaction.user.id))
             return await interaction.reply({
               flags: MessageFlags.Ephemeral,
-              content: "این کامند فقط برای دولوپر هستش."
+              content: language.onlyOwner
             })
 
         // Check command perms
@@ -39,17 +45,18 @@ export default async (client: DiscordClient, interaction: Interaction) => {
           return;
 
         // Use flags conditionally
-        const hasEphemeralOption = command.data.options?.some(option =>
-          option.name === "ephemeral" ||
-          (option.type === 1 && option.options?.some(subOption => subOption.name === "ephemeral"))
-        );
-        if (hasEphemeralOption) 
-          await repeatAction(async () => {
-            return await interaction.deferReply({
-              flags: MessageFlags.Ephemeral,
+        const ephemeralOption = interaction.options
+          ? interaction.options.getString("ephemeral") === "true"
+          : false;
+
+        // Command Handler 
+        await repeatAction(
+          async () =>
+            await interaction.deferReply({
+              flags: ephemeralOption ? MessageFlags.Ephemeral : undefined,
               withResponse: true
-            });
-          }) // 3 tries to defer reply
+            })
+        );
 
         await db.add("totalCommandsUsed", 1);
         return await command.run(client, interaction);

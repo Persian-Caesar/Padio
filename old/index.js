@@ -33,8 +33,6 @@
  */
 // Packages 
 require("dotenv").config();
-const con=process.env
-console.log(con);
 const
   {
     Client,
