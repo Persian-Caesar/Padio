@@ -2,10 +2,12 @@ import {
   EmbedBuilder,
   GuildMember,
   TextChannel,
+  time,
   WebhookClient,
   WebhookMessageCreateOptions
 } from "discord.js";
 import { SendGuildAlert } from "../types/interfaces";
+import selectLanguage from "./selectLanguage";
 import EmbedData from "../storage/EmbedData";
 import GetInvite from "./GetInvite";
 import config from "../../config";
@@ -20,9 +22,11 @@ export default async function SendGuildAlert({
   isLeaved = false
 }: SendGuildAlert) {
   try {
+    const defaultLanguage = selectLanguage(config.discord.default_language);
+
     let
       channel: WebhookClient | TextChannel | null,
-      owner: GuildMember,
+      owner: GuildMember | undefined,
       invite = await GetInvite(guild),
       messageData: WebhookMessageCreateOptions = {};
 
@@ -43,24 +47,25 @@ export default async function SendGuildAlert({
     try {
       owner = await guild.fetchOwner() || (await (await guild.fetch()).fetchOwner());
     } catch { }
+
     const guildCreatedAt = Date.parse(guild.createdAt.toString()) / 1000;
     const embed = new EmbedBuilder()
       .setDescription(description.replace("{guilds}", await client.guilds.cache.size.toLocaleString()))
       .addFields(
         [
           {
-            name: `${EmbedData.emotes.default.owner}| Owner:`,
-            value: `${EmbedData.emotes.default.reply} **${owner!.user} | \`${owner!.user?.tag}\` | \`${owner!.user?.id || guild.ownerId}\`**`,
+            name: `${EmbedData.emotes[isWebhook ? "default" : "theme"].owner}| ${defaultLanguage.replies.guild.owner}`,
+            value: `${EmbedData.emotes[isWebhook ? "default" : "theme"].reply} **${owner?.user} | \`${owner?.user?.tag}\` | \`${owner?.user?.id || guild.ownerId}\`**`,
             inline: false
           },
           {
-            name: `${EmbedData.emotes.default.server}| Guild:`,
-            value: `${EmbedData.emotes.default.reply} **${invite ? `[${guild.name}](${invite.url})` : `${guild.name}`} | \`${guild.id}\` | \`${guild.memberCount}\` Members**`,
+            name: `${EmbedData.emotes[isWebhook ? "default" : "theme"].server}| ${defaultLanguage.replies.guild.guild}`,
+            value: `${EmbedData.emotes[isWebhook ? "default" : "theme"].reply} **${invite ? `[${guild.name}](${invite.url})` : `${guild.name}`} | \`${guild.id}\` | \`${guild.memberCount}\` Members**`,
             inline: false
           },
           {
-            name: `${EmbedData.emotes.default.date}| Created At:`,
-            value: `${EmbedData.emotes.default.reply} **<t:${guildCreatedAt}:D> | <t:${guildCreatedAt}:R>**`,
+            name: `${EmbedData.emotes[isWebhook ? "default" : "theme"].date}| ${defaultLanguage.replies.guild.createdAt}`,
+            value: `${EmbedData.emotes[isWebhook ? "default" : "theme"].reply} **${time(guildCreatedAt, "D")} | ${time(guildCreatedAt, "R")}**`,
             inline: false
           }
         ]

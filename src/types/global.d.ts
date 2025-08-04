@@ -1,10 +1,10 @@
-export { }
+import { EnvBoolean } from "./types";
 
 declare global {
     declare namespace NodeJS {
         interface ProcessEnv {
             default_timeout: string;
-            anti_crash: "true" | "false";
+            anti_crash: EnvBoolean;
             database_mongoURL: string;
             database_msql_database: string;
             database_msql_host: string;
@@ -12,8 +12,8 @@ declare global {
             database_msql_user: string;
             database_type: "json" | "mysql" | "mongodb" | "sql";
             default_language: string;
-            logger: "true" | "false";
-            one_guild: "true" | "false";
+            logger: EnvBoolean;
+            one_guild: EnvBoolean;
             owners: string;
             prefix: string;
             status_loop_count: string;

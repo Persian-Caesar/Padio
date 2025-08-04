@@ -3,6 +3,7 @@ import {
   EmbedBuilder,
   MessageFlags
 } from "discord.js";
+import { LanguageDB } from "../../types/database";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import selectLanguage from "../../utils/selectLanguage";
 import DiscordClient from "../../model/Client";
@@ -17,7 +18,7 @@ export default async (client: DiscordClient, interaction: ButtonInteraction) => 
 
     const db = client.db!;
     const database = DatabaseProperties(interaction.guildId!);
-    const lang = (await db.get<string>(database.language)) || config.discord.default_language;
+    const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
     const language = selectLanguage(lang).replies;
 
     if (interaction.customId === "botUpdates")

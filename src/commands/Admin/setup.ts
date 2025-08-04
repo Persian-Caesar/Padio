@@ -171,9 +171,9 @@ export default {
     try {
       const db = client.db!;
       const database = DatabaseProperties(interaction.guildId!);
-      const lang = (await db.get<string>(database.language)) || config.discord.default_language;
+      const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
       const language = selectLanguage(lang);
-      const prefix = (await db.get<string>(database.prefix)) || `${config.discord.prefix}`;
+      const prefix = (await db.get<PrefixDB>(database.prefix)) || `${config.discord.prefix}`;
       const setup = client.commands.get("setup")!;
 
       const subcommand = getOption<string>(interaction, "getSubcommand", undefined, 0, args);

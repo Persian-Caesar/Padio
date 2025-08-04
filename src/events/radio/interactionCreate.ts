@@ -3,7 +3,7 @@ import {
   MessageFlags,
   StringSelectMenuInteraction
 } from "discord.js";
-import { MusicPlayer } from "@persian-caesar/discord-player";
+import { LanguageDB } from "../../types/database";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkPlayerPerms from "../../utils/checkPlayerPerms";
 import selectLanguage from "../../utils/selectLanguage";
@@ -18,7 +18,7 @@ export default async (client: DiscordClient, interaction: StringSelectMenuIntera
 
     const db = client.db!;
     const database = DatabaseProperties(interaction.guildId!);
-    const lang = (await db.get<string>(database.language)) || config.discord.default_language;
+    const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
     const language = selectLanguage(lang);
 
     if (interaction.customId.startsWith("radioPanel")) {
@@ -30,9 +30,12 @@ export default async (client: DiscordClient, interaction: StringSelectMenuIntera
         return;
 
       // Start to play station
-      const radio = new MusicPlayer((interaction.member as GuildMember).voice.channel!);
+      const radio = client.playerManager.getOrCreatePlayer(interaction.guildId!, (interaction.member as GuildMember).voice.channel!);
+
       await db.set(database.station, choice);
+
       await radio.startRadio(radiostation[choice as "Persian Rap"]);
+
       await interaction.editReply({
         content: language.commands.play.replies.play.replaceValues({
           song: choice

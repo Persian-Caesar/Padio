@@ -2,32 +2,44 @@ import {
   ActionRowBuilder,
   EmbedBuilder,
   Interaction,
+  MessageFlags,
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
+  time,
   WebhookClient
 } from "discord.js";
-import DiscordClient from "../../models/DiscordClient";
+import { LanguageDB } from "../../types/database";
+import DatabaseProperties from "../../utils/DatabaseProperties";
+import selectLanguage from "../../utils/selectLanguage";
+import DiscordClient from "../../model/Client";
 import GetInvite from "../../utils/GetInvite";
-import EmbedData from "../../storage/EmbedData";
+import config from "../../../config";
 import error from "../../utils/error";
+import EmbedData from "../../storage/EmbedData";
 
 export default async (client: DiscordClient, interaction: Interaction) => {
   try {
+    const db = client.db!;
+    const database = DatabaseProperties(interaction.guildId!);
+    const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
+    const language = selectLanguage(lang);
+    const defaultLanguage = selectLanguage(config.discord.default_language);
+
     if (interaction.isButton()) {
       if (interaction.customId === "reportButton") {
         const modal = new ModalBuilder()
-          .setTitle("گزارش")
+          .setTitle(language.replies.modals.reportModalTitle)
           .setCustomId("reportModal")
           .addComponents(
-            new ActionRowBuilder()
+            new ActionRowBuilder<TextInputBuilder>()
               .addComponents(
                 new TextInputBuilder()
                   .setCustomId("reportModalMessage")
-                  .setLabel("چه چیزی را می‌خواهید گزارش کنید؟")
-                  .setPlaceholder("مثال: سلام، در سایت مقاله ها در موبایل قابل رویت نیستند.")
+                  .setLabel(language.replies.modals.reportModalLabel)
+                  .setPlaceholder(language.replies.modals.reportModalPlaceholder)
                   .setStyle(TextInputStyle.Paragraph)
-              ) as ActionRowBuilder<TextInputBuilder>
+              )
           );
 
         return await interaction.showModal(modal);
@@ -37,21 +49,23 @@ export default async (client: DiscordClient, interaction: Interaction) => {
 
     else if (interaction.isModalSubmit()) {
       if (interaction.customId === "reportModal") {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         const
-          webhook = new WebhookClient({ url: client.config.discord.support.webhook.url }),
+          webhook = new WebhookClient({ url: config.discord.support.webhook.url }),
           message = interaction.fields.getTextInputValue("reportModalMessage");
 
         if (interaction.guild) {
           const
-            invite = (await GetInvite(interaction.guild))!,
-            guildCreatedAt = Date.parse(interaction.guild.createdAt.toString()) / 1000;
+            invite = await GetInvite(interaction.guild);
 
           let owner;
           try {
             owner = await (await interaction.guild.fetchOwner()).user ||
               await client.users.cache.get(interaction.guild.ownerId);
           } catch { }
+
+          const guildCreatedAt = Date.parse(interaction.guild.createdAt.toString()) / 1000;
+
           const embed = new EmbedBuilder()
             .setAuthor(
               {
@@ -61,25 +75,27 @@ export default async (client: DiscordClient, interaction: Interaction) => {
             )
             .setColor(EmbedData.color.theme.HexToNumber())
             .setDescription(
-              `**گزارش:**\n${message.toString().length < 3900 ?
-                message.toString() : message.toString().slice(0, 3900) + " and more..."
-              }\n\n-# **از طرف ${interaction.user} | \`${interaction.user?.tag}\` | \`${interaction.user?.id}\`**`
+              language.replies.modals.reportEmbedDescription.replaceValues({
+                message: message.toString().length < 3900 ? message.toString() : message.toString().slice(0, 3900) + " and more...",
+                user: `${interaction.user} | \`${interaction.user?.tag}\` | \`${interaction.user?.id}\``
+              })
+
             )
             .addFields(
               [
                 {
-                  name: `${EmbedData.emotes.default.owner}| مالک سرور:`,
+                  name: `${EmbedData.emotes.default.owner}| ${defaultLanguage.replies.guild.owner}`,
                   value: `${EmbedData.emotes.default.reply} **${owner} | \`${owner?.tag}\` | \`${owner?.id}\`**`,
                   inline: false
                 },
                 {
-                  name: `${EmbedData.emotes.default.server}| سرور:`,
+                  name: `${EmbedData.emotes.default.server}| ${defaultLanguage.replies.guild.guild}`,
                   value: `${EmbedData.emotes.default.reply} **${invite ? `[${interaction.guild.name}](${invite.url})` : `${interaction.guild.name}`} | \`${interaction.guild.id}\` | \`${interaction.guild.memberCount}\` Members**`,
                   inline: false
                 },
                 {
-                  name: `${EmbedData.emotes.default.date}| ایجاد شده در:`,
-                  value: `${EmbedData.emotes.default.reply} **<t:${guildCreatedAt}:D> | <t:${guildCreatedAt}:R>**`,
+                  name: `${EmbedData.emotes.default.date}| ${defaultLanguage.replies.guild.createdAt}`,
+                  value: `${EmbedData.emotes.default.reply} **${time(guildCreatedAt, "D")} | ${time(guildCreatedAt, "R")}**`,
                   inline: false
                 }
               ]
@@ -91,15 +107,17 @@ export default async (client: DiscordClient, interaction: Interaction) => {
             embeds: [embed],
             username: interaction.user.displayName,
             avatarURL: interaction.user.displayAvatarURL({ forceStatic: true }),
-            threadId: client.config.discord.support.webhook.threads.report
+            threadId: config.discord.support.webhook.threads.report
           });
         } else {
           const embed = new EmbedBuilder()
             .setColor(EmbedData.color.theme.HexToNumber())
             .setDescription(
-              `**گزارش:**\n${message.toString().length < 3900 ?
-                message.toString() : message.toString().slice(0, 3900) + " and more..."
-              }\n\n-# **از طرف ${interaction.user} | \`${interaction.user?.tag}\` | \`${interaction.user?.id}\`**`
+              language.replies.modals.reportEmbedDescription.replaceValues({
+                message: message.toString().length < 3900 ? message.toString() : message.toString().slice(0, 3900) + " and more...",
+                user: `${interaction.user} | \`${interaction.user?.tag}\` | \`${interaction.user?.id}\``
+              })
+
             )
             .setThumbnail(interaction.user.displayAvatarURL({ forceStatic: true }))
             .setTimestamp();
@@ -108,11 +126,12 @@ export default async (client: DiscordClient, interaction: Interaction) => {
             embeds: [embed],
             username: interaction.user.displayName,
             avatarURL: interaction.user.displayAvatarURL({ forceStatic: true }),
-            threadId: client.config.discord.support.webhook.threads.report
+            threadId: config.discord.support.webhook.threads.report
           });
         }
+
         return await interaction.editReply({
-          content: "```diff\n+ گزارش شما با موفقیت به توسعه‌دهندگان ارسال شد و طی چند روز آینده بررسی می‌شود.```"
+          content: language.replies.modals.sendReport
         });
       }
     }

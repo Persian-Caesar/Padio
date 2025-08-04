@@ -1,14 +1,13 @@
 import {
-  afkDB,
-  stationDB
+  AfkDB,
+  StationDB
 } from "../../types/database";
-import { MusicPlayer } from "@persian-caesar/discord-player";
+import { VoiceChannel } from "discord.js";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import DiscordClient from "../../model/Client";
 import radiostation from "../../storage/radiostation.json";
 import config from "../../../config";
 import error from "../../utils/error";
-import { VoiceChannel } from "discord.js";
 
 export default async (client: DiscordClient) => {
   try {
@@ -16,17 +15,24 @@ export default async (client: DiscordClient) => {
       client.guilds.cache.map(async (guild) => {
         const db = client.db!;
         const database = DatabaseProperties(guild.id!);
-        const lang = (await db.get<string>(database.language)) || config.discord.default_language;
-        const channelId = await db.get<afkDB>(database.afk);
+        const channelId = await db.get<AfkDB>(database.afk);
         const channel = guild.channels.cache.get(channelId!) as VoiceChannel;
-        const station = await db.get<stationDB>(database.station) || "Lofi Radio";
+        const station = await db.get<StationDB>(database.station) || "Lofi Radio";
 
-        if (channel)
-          return await new MusicPlayer(channel)
-            .startRadio(radiostation[station as "Lofi Radio"]);
+        if (channel) {
+          const player = client.playerManager.getOrCreatePlayer(guild.id!, channel);
 
+          await player.startRadio(radiostation[station as "Lofi Radio"]);
+
+          return;
+        }
+
+        return;
       })
+
     );
+
+    return;
   } catch (e: any) {
     error(e);
   }

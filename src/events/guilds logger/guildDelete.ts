@@ -1,15 +1,21 @@
 import { Guild } from "discord.js"
 import SendGuildAlert from "../../utils/SendGuildAlert"
-import DiscordClient from "../../models/DiscordClient"
 import error from "../../utils/error"
+import DiscordClient from "../../model/Client"
+import selectLanguage from "../../utils/selectLanguage"
+import config from "../../../config"
 
 export default async (client: DiscordClient, guild: Guild) => {
   try {
+      const defaultLanguage = selectLanguage(config.discord.default_language);
+
     return await SendGuildAlert({
       client,
       guild,
       isWebhook: true,
-      description: `-# **I’ve been removed from a server, but I’m still in \`${client.guilds.cache.size.toLocaleString()}\` servers.**`
+      description: defaultLanguage.replies.guildDelete.replaceValues({
+        guilds: client.guilds.cache.size.toLocaleString()
+      })
     })
   } catch (e: any) {
     error(e)

@@ -104,7 +104,7 @@ export default {
         );
 
       // Start to playe
-      const player = new MusicPlayer((interaction.member as GuildMember).voice.channel!);
+      const player = client.playerManager.getOrCreatePlayer(interaction.guildId!, (interaction.member as GuildMember).voice.channel!);
 
       await player.startRadio(radiostation[firstChoice as "Persian Rap"]);
       await db.set(database.station, firstChoice);
@@ -113,7 +113,8 @@ export default {
           song: firstChoice
         })
       });
-      return 
+
+      return
     } catch (e: any) {
       error(e)
     }

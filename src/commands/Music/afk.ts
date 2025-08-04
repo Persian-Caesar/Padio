@@ -12,7 +12,7 @@ import {
   VoiceChannel
 } from "discord.js";
 import {
-  afkDB,
+  AfkDB,
   LanguageDB
 } from "../../types/database";
 import { getChannel } from "../../utils/interactionTools";
@@ -86,14 +86,14 @@ export default {
       const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
       const language = selectLanguage(lang).commands.afk;
 
-      const  queue = client.playerManager.getPlayer(interaction.guildId!);
-        const afk = client.commands.get("afk")!;
+      const queue = client.playerManager.getPlayer(interaction.guildId!);
+      const afk = client.commands.get("afk")!;
 
       let channel = getChannel<VoiceChannel>(interaction, "channel");
       if (!channel && queue)
         channel = (interaction.member as GuildMember)?.voice?.channel as VoiceChannel;
 
-      const afkChannel = await db.get<afkDB>(database.afk);
+      const afkChannel = await db.get<AfkDB>(database.afk);
       if (!channel && afkChannel) {
         const message = (await response(
           interaction,

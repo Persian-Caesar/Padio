@@ -1,15 +1,14 @@
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  GuildMember,
   PermissionsBitField
 } from "discord.js";
 import { CommandType } from "../../types/interfaces";
-import { MusicPlayer } from "@persian-caesar/discord-player";
 import { LanguageDB } from "../../types/database";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkPlayerPerms from "../../utils/checkPlayerPerms";
 import selectLanguage from "../../utils/selectLanguage";
+import responseError from "../../utils/responseError";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
@@ -63,18 +62,24 @@ export default {
       const db = client.db!;
       const database = DatabaseProperties(interaction.guildId!);
       const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
-      const language = selectLanguage(lang).commands.stop;
+      const language = selectLanguage(lang);
 
-    // Check perms
+      // Check perms
       if (await checkPlayerPerms(interaction))
         return;
 
-    // Stop The Player
-      const queue = new MusicPlayer((interaction.member as GuildMember).voice.channel!);
+      // Stop The Player
+      const queue = client.playerManager.getPlayer(interaction.guildId!);
+      if (!queue)
+        return await responseError(
+          interaction,
+          language.commands.afk.replies.noPlayerError
+        );
+
       queue.stop();
 
       return await response(interaction, {
-        content: language.replies.stopped
+        content: language.commands.stop.replies.stopped
       });
     } catch (e: any) {
       error(e)

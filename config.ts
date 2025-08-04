@@ -6,6 +6,7 @@ config();
 
 export default {
     source: {
+        logger: process.env.logger === "true" ? true : false || false, // Send console erros to discord. on or off
         anti_crash: process.env.anti_crash === "true" ? true : false || false, // Anticrash on or off
         database: {
             type: process.env.database_type || "", // Choose one type for save users and guilds data. Types: "mysql" | "sql" | "mongodb" | "json"

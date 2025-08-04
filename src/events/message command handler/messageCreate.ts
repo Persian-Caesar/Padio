@@ -3,7 +3,10 @@ import {
     Message,
     TextChannel
 } from "discord.js";
-import { PrefixDB } from "../../types/database";
+import {
+    LanguageDB,
+    PrefixDB
+} from "../../types/database";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkCmdCooldown from "../../utils/checkCmdCooldown";
 import selectLanguage from "../../utils/selectLanguage";
@@ -16,7 +19,7 @@ export default async (client: DiscordClient, message: Message) => {
     try {
         const db = client.db!;
         const database = DatabaseProperties(message.guildId!);
-        const lang = (await db.get<string>(database.language)) || config.discord.default_language;
+        const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
         const language = selectLanguage(lang).replies;
 
         // Filter uncatched messages

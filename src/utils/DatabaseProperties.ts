@@ -5,7 +5,8 @@ export default function DatabaseProperties(id1: string, id2?: string) {
     panel: `radioPanel.${id1}`,
     customCommand: `commands.${id1}`,
     afk: `radioAFK.${id1}`,
-    station: `radioStation.${id1}`
+    station: `radioStation.${id1}`,
+    status: `status.${id1}`,
   }
 }
 /**

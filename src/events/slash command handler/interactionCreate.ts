@@ -2,20 +2,21 @@ import {
   Interaction,
   MessageFlags
 } from "discord.js";
+import { LanguageDB } from "../../types/database";
+import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkCmdCooldown from "../../utils/checkCmdCooldown";
+import selectLanguage from "../../utils/selectLanguage";
 import checkCmdPerms from "../../utils/checkCmdPerms";
 import DiscordClient from "../../model/Client";
-import error from "../../utils/error";
 import repeatAction from "../../utils/repeatAction";
-import DatabaseProperties from "../../utils/DatabaseProperties";
 import config from "../../../config";
-import selectLanguage from "../../utils/selectLanguage";
+import error from "../../utils/error";
 
 export default async (client: DiscordClient, interaction: Interaction) => {
   try {
     const db = client.db!;
     const database = DatabaseProperties(interaction.guildId!);
-    const lang = (await db.get<string>(database.language)) || config.discord.default_language;
+    const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
     const language = selectLanguage(lang).replies;
 
     // Load Slash Commands

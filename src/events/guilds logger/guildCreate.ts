@@ -1,15 +1,21 @@
 import { Guild } from "discord.js"
+import selectLanguage from "../../utils/selectLanguage"
 import SendGuildAlert from "../../utils/SendGuildAlert"
-import DiscordClient from "../../models/DiscordClient"
+import DiscordClient from "../../model/Client"
+import config from "../../../config"
 import error from "../../utils/error"
 
 export default async (client: DiscordClient, guild: Guild) => {
   try {
+    const defaultLanguage = selectLanguage(config.discord.default_language);
+
     return await SendGuildAlert({
       client,
       guild,
       isWebhook: true,
-      description: `-# **I’ve recently joined a new server, now I’m in \`${client.guilds.cache.size.toLocaleString()}\` servers.**`
+      description: defaultLanguage.replies.guildCreate.replaceValues({
+        guilds: client.guilds.cache.size.toLocaleString()
+      })
     })
   } catch (e: any) {
     error(e)

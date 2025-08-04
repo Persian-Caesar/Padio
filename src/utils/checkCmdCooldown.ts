@@ -5,6 +5,7 @@ import {
 import { isBaseInteraction } from "./interactionTools";
 import { Respondable } from "../types/types";
 import { CommandType } from "../types/interfaces";
+import { LanguageDB } from "../types/database";
 import DatabaseProperties from "./DatabaseProperties";
 import selectLanguage from "./selectLanguage";
 import responseError from "./responseError";
@@ -23,7 +24,7 @@ export default async function checkCmdCooldown(
       db = client.db!,
       userId = (isBaseInteraction(interaction ) ? interaction.user.id : interaction.author?.id),
       databaseNames = DatabaseProperties(interaction.guildId!),
-      lang = (await db.get<string>(databaseNames.language)) || config.discord.default_language,
+      lang = (await db.get<LanguageDB>(databaseNames.language)) || config.discord.default_language,
       language = selectLanguage(lang).replies,
       mentionCommand = prefix
         ? `\`${prefix + command.data.name}${command.data.options?.some((a) => a.type === 1 && a.name === args?.[0])

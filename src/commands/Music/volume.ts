@@ -2,12 +2,9 @@ import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   EmbedBuilder,
-  GuildMember,
-  MessageFlags,
   PermissionsBitField
 } from "discord.js";
 import { CommandType } from "../../types/interfaces";
-import { MusicPlayer } from "@persian-caesar/discord-player";
 import { LanguageDB } from "../../types/database";
 import { getOption } from "../../utils/interactionTools";
 import DatabaseProperties from "../../utils/DatabaseProperties";
@@ -76,32 +73,33 @@ export default {
       const db = client.db!;
       const database = DatabaseProperties(interaction.guildId!);
       const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
-      const language = selectLanguage(lang).commands.volume;
+      const language = selectLanguage(lang);
 
       // Check perms
       if (await checkPlayerPerms(interaction))
         return;
 
       // Change the player volume
-      const queue = new MusicPlayer((interaction.member as GuildMember).voice.channel!);
+      const queue = client.playerManager.getPlayer(interaction.guildId!);
+
       const input = getOption<number>(interaction, "getNumber", "input", 0, args);
-      if (!queue.isPlaying())
+      if (!queue || !queue.isConnected())
         return await responseError(
           interaction,
-          selectLanguage(lang).replies.noConnection
+          language.replies.noConnection
         )
 
       if (!input) {
         const embed = new EmbedBuilder()
           .setColor(EmbedData.color.theme.HexToNumber())
           .setDescription(
-            language.replies.currentVolume.replaceValues({
+            language.commands.volume.replies.currentVolume.replaceValues({
               volume: queue.getVolume().toString()
             })
           )
           .setFooter(
             {
-              text: language.replies.footer
+              text: language.commands.volume.replies.footer
             }
           );
 
@@ -113,12 +111,12 @@ export default {
       if (+input < 0 || +input > 200)
         return await responseError(
           interaction,
-          language.replies.invalidInput
+          language.commands.volume.replies.invalidInput
         );
 
       queue.setVolume(+input);
       return await response(interaction, {
-        content: language.replies.success.replaceValues({
+        content: language.commands.volume.replies.success.replaceValues({
           volume: input.toString()
         })
       });

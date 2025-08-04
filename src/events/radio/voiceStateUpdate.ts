@@ -1,19 +1,15 @@
 import {
-  GuildMember,
-  MessageFlags,
-  StringSelectMenuInteraction,
   VoiceChannel,
   VoiceState
 } from "discord.js";
-import { MusicPlayer } from "@persian-caesar/discord-player";
+import {
+  AfkDB,
+  StationDB
+} from "../../types/database";
 import DatabaseProperties from "../../utils/DatabaseProperties";
-import checkPlayerPerms from "../../utils/checkPlayerPerms";
-import selectLanguage from "../../utils/selectLanguage";
 import DiscordClient from "../../model/Client";
 import radiostation from "../../storage/radiostation.json";
-import config from "../../../config";
 import error from "../../utils/error";
-import { afkDB, stationDB } from "../../types/database";
 
 export default async (client: DiscordClient, oldState: VoiceState, newState: VoiceState) => {
   try {
@@ -22,15 +18,15 @@ export default async (client: DiscordClient, oldState: VoiceState, newState: Voi
     const state = oldState || newState;
     const database = DatabaseProperties(state.guild.id);
 
-    const channelId = await db.get<afkDB>(database.afk);
-    const station = await db.get<stationDB>(database.station) || "Lofi Radio";
+    const channelId = await db.get<AfkDB>(database.afk);
+    const station = await db.get<StationDB>(database.station) || "Lofi Radio";
     const oldHumansInVoiceSize = oldState.channel?.members?.filter(a => !a.user.bot)?.size || 0;
     const newHumansInVoiceSize = newState.channel?.members?.filter(a => !a.user.bot)?.size || 0;
     const botDisconnected = oldState.member?.id === client.user!.id && !newState.channelId;
 
     const channel = state.guild.channels.cache.get(channelId!) as VoiceChannel;
 
-    const player = new MusicPlayer(channel);
+    const player = client.playerManager.getOrCreatePlayer(state.guild.id!, channel);
 
     if (!channel) return;
 
@@ -41,7 +37,7 @@ export default async (client: DiscordClient, oldState: VoiceState, newState: Voi
       return await player.startRadio(radiostation[station as "Anime Radio"]);
 
     if (botDisconnected)
-      return player.();
+      return player.join();
 
   } catch (e: any) {
     error(e);

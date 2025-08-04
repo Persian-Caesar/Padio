@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import { isBaseInteraction } from "./interactionTools";
 import { Respondable } from "../types/types";
+import { LanguageDB } from "../types/database";
 import selectLanguage from "./selectLanguage";
 import repeatAction from "./repeatAction";
 import EmbedData from "../storage/EmbedData";
@@ -29,7 +30,7 @@ export default async function responseError(
       databaseNames = {
         language: `language.${interaction.guildId}`
       },
-      lang = (await db.get<string>(databaseNames.language)) || config.discord.default_language,
+      lang = (await db.get<LanguageDB>(databaseNames.language)) || config.discord.default_language,
       language = selectLanguage(lang);
 
     if (!data)

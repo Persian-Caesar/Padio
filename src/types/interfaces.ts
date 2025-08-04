@@ -345,6 +345,7 @@ export interface Language {
 export interface ConfigType {
     source: {
         anti_crash: boolean, // Anticrash on or off
+        logger: boolean, // Send console erros to discord. on or off
         database: {
             type: ConfigDatabaseTypes, // Choose one type for save users and guilds data. Types: "mysql" | "sql" | "mongodb" | "json"
             mongoURL: string, // If you choose "mongodb" type place your mongo url.
