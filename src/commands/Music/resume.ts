@@ -9,6 +9,7 @@ import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkPlayerPerms from "../../utils/checkPlayerPerms";
 import selectLanguage from "../../utils/selectLanguage";
 import responseError from "../../utils/responseError";
+import MusicPlayer from "../../model/MusicPlayer";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
@@ -69,7 +70,7 @@ export default {
         return;
 
       // resume Player
-      const queue = client.playerManager.getPlayer(interaction.guildId!);
+      const queue = new MusicPlayer(interaction);
       if (!queue)
         return await responseError(
           interaction,

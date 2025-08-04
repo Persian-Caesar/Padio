@@ -11,6 +11,7 @@ import DiscordClient from "../../model/Client";
 import radiostation from "../../storage/radiostation.json";
 import config from "../../../config";
 import error from "../../utils/error";
+import MusicPlayer from "../../model/MusicPlayer";
 
 export default async (client: DiscordClient, interaction: StringSelectMenuInteraction) => {
   try {
@@ -30,11 +31,11 @@ export default async (client: DiscordClient, interaction: StringSelectMenuIntera
         return;
 
       // Start to play station
-      const radio = client.playerManager.getOrCreatePlayer(interaction.guildId!, (interaction.member as GuildMember).voice.channel!);
+      const radio = new MusicPlayer(interaction);
 
       await db.set(database.station, choice);
 
-      await radio.startRadio(radiostation[choice as "Persian Rap"]);
+      await radio.radio(radiostation[choice as "Persian Rap"]);
 
       await interaction.editReply({
         content: language.commands.play.replies.play.replaceValues({

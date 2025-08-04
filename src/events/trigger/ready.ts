@@ -6,13 +6,12 @@ import {
 } from "../../types/database";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Message, TextChannel, VoiceChannel } from "discord.js";
 import DatabaseProperties from "../../utils/DatabaseProperties";
+import StatusEmbedBuilder from "../../utils/StatusEmbedBuilder";
+import selectLanguage from "../../utils/selectLanguage";
 import DiscordClient from "../../model/Client";
-import radiostation from "../../storage/radiostation.json";
+import EmbedData from "../../storage/EmbedData";
 import config from "../../../config";
 import error from "../../utils/error";
-import statusEmbedBuilder from "../../utils/statusEmbedBuilder";
-import EmbedData from "../../storage/EmbedData";
-import selectLanguage from "../../utils/selectLanguage";
 
 export default async (client: DiscordClient) => {
   try {
@@ -28,7 +27,7 @@ export default async (client: DiscordClient) => {
       setInterval(async () => {
         const status_message = await db.get<StatusDB>(database.status);
 
-        const embed = EmbedBuilder.from((await statusEmbedBuilder(client))!);
+        const embed = EmbedBuilder.from((await StatusEmbedBuilder(client))!);
         const row = [
           new ActionRowBuilder<ButtonBuilder>()
             .addComponents(

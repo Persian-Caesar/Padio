@@ -9,6 +9,7 @@ import {
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import DiscordClient from "../../model/Client";
 import radiostation from "../../storage/radiostation.json";
+import MusicPlayer from "../../model/MusicPlayer";
 import error from "../../utils/error";
 
 export default async (client: DiscordClient, oldState: VoiceState, newState: VoiceState) => {
@@ -24,17 +25,21 @@ export default async (client: DiscordClient, oldState: VoiceState, newState: Voi
     const newHumansInVoiceSize = newState.channel?.members?.filter(a => !a.user.bot)?.size || 0;
     const botDisconnected = oldState.member?.id === client.user!.id && !newState.channelId;
 
-    const channel = state.guild.channels.cache.get(channelId!) as VoiceChannel;
+    if (!channelId) return;
 
-    const player = client.playerManager.getOrCreatePlayer(state.guild.id!, channel);
-
-    if (!channel) return;
+    const player = new MusicPlayer()
+      .setData({
+        channelId: channelId,
+        guildId: state.guild.id,
+        debug: true,
+        adapterCreator: state.guild.voiceAdapterCreator
+      });
 
     if (newHumansInVoiceSize === 0 && oldHumansInVoiceSize > 0)
       return player.stop();
 
     if (oldHumansInVoiceSize === 0 && newHumansInVoiceSize > 0)
-      return await player.startRadio(radiostation[station as "Anime Radio"]);
+      return await player.radio(radiostation[station as "Anime Radio"]);
 
     if (botDisconnected)
       return player.join();

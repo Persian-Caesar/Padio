@@ -2,11 +2,10 @@ import {
   AfkDB,
   StationDB
 } from "../../types/database";
-import { VoiceChannel } from "discord.js";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import DiscordClient from "../../model/Client";
 import radiostation from "../../storage/radiostation.json";
-import config from "../../../config";
+import MusicPlayer from "../../model/MusicPlayer";
 import error from "../../utils/error";
 
 export default async (client: DiscordClient) => {
@@ -16,13 +15,17 @@ export default async (client: DiscordClient) => {
         const db = client.db!;
         const database = DatabaseProperties(guild.id!);
         const channelId = await db.get<AfkDB>(database.afk);
-        const channel = guild.channels.cache.get(channelId!) as VoiceChannel;
         const station = await db.get<StationDB>(database.station) || "Lofi Radio";
 
-        if (channel) {
-          const player = client.playerManager.getOrCreatePlayer(guild.id!, channel);
+        if (channelId) {
+          const player = new MusicPlayer()
+            .setData({
+              channelId: channelId,
+              guildId: guild.id,
+              adapterCreator: guild.voiceAdapterCreator
+            });
 
-          await player.startRadio(radiostation[station as "Lofi Radio"]);
+          await player.radio(radiostation[station as "Lofi Radio"]);
 
           return;
         }

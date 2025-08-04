@@ -16,9 +16,10 @@ export default async (client: DiscordClient) => {
     };
   }
   post(
-    selectLanguage().replies.loadEvents.replaceValues({
-      count: String(amount).cyan
-    }), "S"
+    selectLanguage().replies.loadEvents.split("{count}")[0].green
+    + String(amount).cyan
+    + selectLanguage().replies.loadEvents.split("{count}")[1].green,
+    "S"
   );
 }
 /**

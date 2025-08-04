@@ -1,7 +1,6 @@
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  GuildMember,
   PermissionsBitField
 } from "discord.js";
 import { CommandType } from "../../types/interfaces";
@@ -13,6 +12,7 @@ import responseError from "../../utils/responseError";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
+import MusicPlayer from "../../model/MusicPlayer";
 
 const defaultLanguage = selectLanguage(config.discord.default_language).commands.pause;
 const ephemeral = selectLanguage(config.discord.default_language).replies.ephemeral;
@@ -70,7 +70,7 @@ export default {
         return;
 
       // Pause Player
-      const queue = client.playerManager.getPlayer(interaction.guildId!);
+      const queue = new MusicPlayer(interaction);
       if (!queue)
         return await responseError(
           interaction,

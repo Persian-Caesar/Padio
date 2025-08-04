@@ -11,6 +11,7 @@ import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkPlayerPerms from "../../utils/checkPlayerPerms";
 import selectLanguage from "../../utils/selectLanguage";
 import responseError from "../../utils/responseError";
+import MusicPlayer from "../../model/MusicPlayer";
 import EmbedData from "../../storage/EmbedData";
 import response from "../../utils/response";
 import config from "../../../config";
@@ -80,7 +81,7 @@ export default {
         return;
 
       // Change the player volume
-      const queue = client.playerManager.getPlayer(interaction.guildId!);
+      const queue = new MusicPlayer(interaction);
 
       const input = getOption<number>(interaction, "getNumber", "input", 0, args);
       if (!queue || !queue.isConnected())
@@ -94,7 +95,7 @@ export default {
           .setColor(EmbedData.color.theme.HexToNumber())
           .setDescription(
             language.commands.volume.replies.currentVolume.replaceValues({
-              volume: queue.getVolume().toString()
+              volume: queue.volume.toString()
             })
           )
           .setFooter(

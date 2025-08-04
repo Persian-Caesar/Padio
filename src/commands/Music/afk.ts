@@ -17,7 +17,6 @@ import {
 } from "../../types/database";
 import { getChannel } from "../../utils/interactionTools";
 import { CommandType } from "../../types/interfaces";
-import { MusicPlayer } from "@persian-caesar/discord-player";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import selectLanguage from "../../utils/selectLanguage";
 import responseDelete from "../../utils/responseDelete";
@@ -26,6 +25,7 @@ import EmbedData from "../../storage/EmbedData";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
+import MusicPlayer from "../../model/MusicPlayer";
 
 const defaultLanguage = selectLanguage(config.discord.default_language).commands.afk;
 const ephemeral = selectLanguage(config.discord.default_language).replies.ephemeral;
@@ -85,12 +85,13 @@ export default {
       const database = DatabaseProperties(interaction.guildId!);
       const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
       const language = selectLanguage(lang).commands.afk;
+      const memberChannelId = (interaction.member as GuildMember)?.voice?.channelId;
 
-      const queue = client.playerManager.getPlayer(interaction.guildId!);
+      const queue = new MusicPlayer();
       const afk = client.commands.get("afk")!;
 
       let channel = getChannel<VoiceChannel>(interaction, "channel");
-      if (!channel && queue)
+      if (!channel && memberChannelId)
         channel = (interaction.member as GuildMember)?.voice?.channel as VoiceChannel;
 
       const afkChannel = await db.get<AfkDB>(database.afk);
@@ -166,13 +167,13 @@ export default {
         return;
       }
 
-      if (!channel || !queue)
+      if (!channel || !memberChannelId)
         return await responseError(
           interaction,
           language.replies.noChannelError
         );
 
-      if (!queue.isPlaying())
+      if (!queue.isConnected(interaction.guildId!))
         return await responseError(
           interaction,
           language.replies.noPlayerError

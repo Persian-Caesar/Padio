@@ -11,10 +11,14 @@ export default async (client: DiscordClient) => {
         commandTypes.forEach(async (type) => {
             await loadCommand(`${process.cwd()}/dist/src/commands`, type, client.commands);
             post(
-                selectLanguage().replies.loadCommands.replaceValues({
-                    cmdCount: (client.commands.filter(a => a[type]).size).toString().cyan,
-                    type: type.replace("only_", "").toCapitalize()
-                }), "S");
+                selectLanguage().replies.loadCommands.split("{cmdCount}")[0].green
+                + (client.commands.filter(a => a[type]).size).toString().cyan
+                + selectLanguage().replies.loadCommands.split("{cmdCount}")[1]
+                    .replaceValues({
+                        type: type.replace("only_", "").toCapitalize()
+                    }).green,
+                "S"
+            );
         });
     } catch (e: any) {
         error(e)

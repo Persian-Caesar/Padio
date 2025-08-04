@@ -76,14 +76,18 @@ Array.prototype.chunk = function (size) {
 }
 
 import { readdirSync } from "fs";
+import selectLanguage from "./src/utils/selectLanguage";
 import DiscordClient from "./src/model/Client";
 import packageJSON from "./package.json";
+import Database from "./src/model/Database";
+import config from "./config";
 import error from "./src/utils/error";
 import post from "./src/functions/post";
 
+const defaultLanguage = selectLanguage(config.discord.default_language);
+
 // Add color to console messages.
 import "colors";
-import Database from "./src/model/Database";
 
 // Load discord client
 const client = new DiscordClient();
@@ -100,7 +104,10 @@ const main = async () => {
             "magenta",
             "cyan"
         );
-        post("Logging into the BOT...", "S");
+        post(
+            defaultLanguage.replies.loadBot,
+            "S"
+        );
 
         // Initialize QuickDB
         post("Loading database...", "S")
@@ -111,10 +118,10 @@ const main = async () => {
         if (database) {
             client.db = new Database(database.db);
             post(
-                `Database Is Successfully Activated!! (Type: ${database.dbType})`,
+                "Database Is Successfully Activated!! (Type: " + database.dbType.yellow + ")".green,
                 "S"
             );
-            post("Database was loaded!", "D")
+            post("Database was loaded!".green, "D")
         }
 
         // Load Handlers 
@@ -126,17 +133,37 @@ const main = async () => {
             amount++;
         }
 
-        post((String(amount)).cyan + " Handler Is Loaded!!".green, "S");
+        post(
+            defaultLanguage.replies.loadHandlers.split("{count}")[0].green
+            + (amount.toString()).cyan
+            + defaultLanguage.replies.loadHandlers.split("{count}")[1].green,
+            "S"
+        );
         if (client.token)
             await client
                 .login(client.token)
                 .catch(e => {
-                    post("The Bot Token You Entered Into Your Project Is Incorrect Or Your Bot's INTENTS Are OFF!!", "E", "red", "red");
+                    if (e.stack.toLowerCase().includes("connect"))
+                        post(
+                            defaultLanguage.replies.ipError,
+                            "E",
+                            "red",
+                            "red"
+                        );
+
+                    else
+                        post(
+                            defaultLanguage.replies.loginError,
+                            "E",
+                            "red",
+                            "red"
+                        );
+
                     error(e);
                 });
 
         else
-            post("Please Write Your Bot Token Opposite The Token In The config.js File In Your Project!!", "E", "red", "red");
+            post(defaultLanguage.replies.noTokenError, "red", "red");
 
     } catch (e: any) {
         error(e);

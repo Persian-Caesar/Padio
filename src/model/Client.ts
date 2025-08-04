@@ -7,14 +7,12 @@ import {
 import { CommandType } from "../types/interfaces";
 import Database from "./Database";
 import config from "../../config";
-import { PlayerManager } from "@persian-caesar/discord-player";
 
 export default class DiscordClient extends Client {
     public commands: Collection<string, CommandType>;
     public cooldowns: Collection<string, Collection<string, number>>;
     public config: typeof config;
     public db: Database | null = null;
-    public playerManager: typeof PlayerManager;
     constructor(options?: ClientOptions) {
         if (!options)
             options = {
@@ -42,7 +40,6 @@ export default class DiscordClient extends Client {
         this.cooldowns = new Collection();
         this.config = config;
         this.token = this.config.discord.token;
-        this.playerManager = PlayerManager
     }
 }
 /**

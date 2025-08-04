@@ -2,7 +2,7 @@ import {
   ButtonInteraction,
   EmbedBuilder
 } from "discord.js";
-import statusEmbedBuilder from "../../utils/statusEmbedBuilder";
+import StatusEmbedBuilder from "../../utils/StatusEmbedBuilder";
 import selectLanguage from "../../utils/selectLanguage";
 import DiscordClient from "../../model/Client";
 import config from "../../../config";
@@ -15,7 +15,7 @@ export default async (client: DiscordClient, interaction: ButtonInteraction) => 
     if (interaction.customId === "refreshStatus") {
       await interaction.deferUpdate({ withResponse: true });
       const language = selectLanguage(config.discord.default_language);
-      const embed = await statusEmbedBuilder(client, language);
+      const embed = await StatusEmbedBuilder(client, language);
 
       await interaction.editReply({
         embeds: [

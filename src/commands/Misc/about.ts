@@ -10,7 +10,7 @@ import {
 import { CommandType } from "../../types/interfaces";
 import { LanguageDB } from "../../types/database";
 import DatabaseProperties from "../../utils/DatabaseProperties";
-import statusEmbedBuilder from "../../utils/statusEmbedBuilder";
+import StatusEmbedBuilder from "../../utils/StatusEmbedBuilder";
 import selectLanguage from "../../utils/selectLanguage";
 import EmbedData from "../../storage/EmbedData";
 import response from "../../utils/response";
@@ -65,7 +65,7 @@ export default {
       const database = DatabaseProperties(interaction.guildId!);
       const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
       const language = selectLanguage(lang);
-      const embed = await statusEmbedBuilder(client, language);
+      const embed = await StatusEmbedBuilder(client, language);
       const embeds = [EmbedBuilder.from(embed!)];
 
       const components = [

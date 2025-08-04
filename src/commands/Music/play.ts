@@ -4,18 +4,21 @@ import {
   GuildMember,
   PermissionsBitField
 } from "discord.js";
+import {
+  LanguageDB,
+  PanelDB
+} from "../../types/database";
 import { CommandType } from "../../types/interfaces";
-import { MusicPlayer } from "@persian-caesar/discord-player";
-import { LanguageDB, PanelDB } from "../../types/database";
 import { getOption } from "../../utils/interactionTools";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkPlayerPerms from "../../utils/checkPlayerPerms";
 import selectLanguage from "../../utils/selectLanguage";
+import responseError from "../../utils/responseError";
 import radiostation from "../../storage/radiostation.json";
+import MusicPlayer from "../../model/MusicPlayer";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
-import responseError from "../../utils/responseError";
 
 const defaultLanguage = selectLanguage(config.discord.default_language).commands.play;
 const ephemeral = selectLanguage(config.discord.default_language).replies.ephemeral;
@@ -104,9 +107,9 @@ export default {
         );
 
       // Start to playe
-      const player = client.playerManager.getOrCreatePlayer(interaction.guildId!, (interaction.member as GuildMember).voice.channel!);
+      const player = new MusicPlayer(interaction);
 
-      await player.startRadio(radiostation[firstChoice as "Persian Rap"]);
+      await player.radio(radiostation[firstChoice as "Persian Rap"]);
       await db.set(database.station, firstChoice);
       await response(interaction, {
         content: language.replies.play.replaceValues({
