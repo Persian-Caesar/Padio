@@ -20,12 +20,12 @@ import { CommandType } from "../../types/interfaces";
 import { MusicPlayer } from "@persian-caesar/discord-player";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import selectLanguage from "../../utils/selectLanguage";
+import responseDelete from "../../utils/responseDelete";
+import responseError from "../../utils/responseError";
 import EmbedData from "../../storage/EmbedData";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
-import responseError from "../../utils/responseError";
-import responseDelete from "../../utils/responseDelete";
 
 const defaultLanguage = selectLanguage(config.discord.default_language).commands.afk;
 const ephemeral = selectLanguage(config.discord.default_language).replies.ephemeral;
@@ -86,12 +86,11 @@ export default {
       const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
       const language = selectLanguage(lang).commands.afk;
 
-      const memberChannelId = (interaction.member as GuildMember)?.voice?.channel,
-        queue = new MusicPlayer(memberChannelId!),
-        afk = client.commands.get("afk")!;
+      const  queue = client.playerManager.getPlayer(interaction.guildId!);
+        const afk = client.commands.get("afk")!;
 
       let channel = getChannel<VoiceChannel>(interaction, "channel");
-      if (!channel && memberChannelId)
+      if (!channel && queue)
         channel = (interaction.member as GuildMember)?.voice?.channel as VoiceChannel;
 
       const afkChannel = await db.get<afkDB>(database.afk);
@@ -167,7 +166,7 @@ export default {
         return;
       }
 
-      if (!channel && !memberChannelId)
+      if (!channel || !queue)
         return await responseError(
           interaction,
           language.replies.noChannelError
