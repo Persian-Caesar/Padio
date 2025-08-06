@@ -38,28 +38,7 @@ export default async (client: DiscordClient) => {
           }
         ]
       });
-    }, 30000);
-
-    // Add Slash Commands Id to Commands
-    Promise.all(
-      client.commands.map(async (command) => {
-        const
-          cmd = client.commands.get(command.data.name)!,
-          slashCommand = (await client.application!.commands.fetch({ cache: true, force: true }))
-            .find(a => a.name === command.data.name);
-
-        return client.commands.set(
-          cmd.data.name,
-          {
-            ...cmd,
-            data: {
-              ...cmd.data,
-              id: slashCommand?.id
-            }
-          }
-        );
-      })
-    )
+    }, config.discord.status_loop);
   } catch (e: any) {
     error(e);
   }

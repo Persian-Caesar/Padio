@@ -36,9 +36,9 @@ export default async function checkCmdPerms(
           : ""
         }:${command.data.id}>`,
 
-      getSuncommand = interaction instanceof ChatInputCommandInteraction && interaction.options && interaction.options.getSubcommand(),
-      getSubcommandOptions = getSuncommand && command.data.options?.find(option =>
-        option.type === ApplicationCommandOptionType.Subcommand && option.name === getSuncommand
+      getSubcommand = interaction instanceof ChatInputCommandInteraction && interaction.options && interaction.options.getSubcommand(true),
+      getSubcommandOptions = getSubcommand && command.data.options?.find(option =>
+        option.type === ApplicationCommandOptionType.Subcommand && option.name === getSubcommand
       );
 
     const channel = interaction.channel;

@@ -9,7 +9,7 @@ import {
   PanelDB
 } from "../../types/database";
 import { CommandType } from "../../types/interfaces";
-import { getOption } from "../../utils/interactionTools";
+import { getOption, isBaseInteraction } from "../../utils/interactionTools";
 import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkPlayerPerms from "../../utils/checkPlayerPerms";
 import selectLanguage from "../../utils/selectLanguage";
@@ -77,13 +77,8 @@ export default {
       const database = DatabaseProperties(interaction.guildId!);
       const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
       const language = selectLanguage(lang).commands.play;
-      const query = getOption<string>(interaction, "getString", "station") || args!.join(" ");
+      const query = isBaseInteraction(interaction) ? getOption<string>(interaction, "getString", "station") : args!.join(" ");
       const panelId = await db.get<PanelDB>(database.panel);
-      const firstChoice = Object
-        .keys(radiostation)
-        .filter(a =>
-          a.toLowerCase().startsWith(query?.toLowerCase())
-        ).random();
 
       // Check perms
       if (await checkPlayerPerms(interaction))
@@ -97,6 +92,12 @@ export default {
               channel: panelId.channel
             })
           );
+
+      const firstChoice = Object
+        .keys(radiostation)
+        .filter(a =>
+          a.toLowerCase().startsWith(query?.toLowerCase() || "")
+        ).random();
 
       if (!query || !firstChoice)
         return await responseError(
