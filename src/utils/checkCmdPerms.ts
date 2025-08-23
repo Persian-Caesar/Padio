@@ -1,6 +1,7 @@
 import {
   ApplicationCommandOptionType,
-  ChatInputCommandInteraction,
+  CommandInteraction,
+  CommandInteractionOptionResolver,
   GuildChannel,
   GuildMember,
   PermissionsBitField
@@ -31,15 +32,16 @@ export default async function checkCmdPerms(
           ? ` ${command.data.options.find((a) => a.name === args![0])!.name}`
           : ""
         }\``
-        : `</${command.data.name}${interaction instanceof ChatInputCommandInteraction && interaction.options?.data.some((a) => a.type === 1)
-          ? ` ${interaction.options.data.find((a) => a.type === 1)!.name}`
+        : `</${command.data.name}${interaction instanceof CommandInteraction && interaction.command?.options?.some((a) => a.type === 1)
+          ? ` ${interaction.command?.options?.find((a) => a.type === 1)!.name}`
           : ""
-        }:${command.data.id}>`,
+        }:${command.data.id}> `,
 
-      getSubcommand = interaction instanceof ChatInputCommandInteraction && interaction.options && interaction.options.getSubcommand(true),
+      getSubcommand = interaction instanceof CommandInteraction && interaction.command?.options instanceof CommandInteractionOptionResolver && interaction.command?.options.find(a => a.type === ApplicationCommandOptionType.Subcommand),
       getSubcommandOptions = getSubcommand && command.data.options?.find(option =>
-        option.type === ApplicationCommandOptionType.Subcommand && option.name === getSubcommand
+        option.type === ApplicationCommandOptionType.Subcommand && option.name === getSubcommand.name
       );
+
 
     const channel = interaction.channel;
     if (channel && channel.isTextBased() && channel instanceof GuildChannel) {
@@ -96,7 +98,9 @@ export default async function checkCmdPerms(
     }
 
     return false;
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

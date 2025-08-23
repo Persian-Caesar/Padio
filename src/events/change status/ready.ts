@@ -1,3 +1,4 @@
+import { TotalCommandsUsedDB } from "../../types/database";
 import { StatusActivityType } from "../../types/types";
 import { ActivityType } from "discord.js";
 import DiscordClient from "../../model/Client";
@@ -25,7 +26,7 @@ export default async (client: DiscordClient) => {
           servers: client.guilds.cache.size.toLocaleString(),
           members: client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString(),
           prefix: config.discord.prefix,
-          usedCommands: (await db.get("totalCommandsUsed") || 0).toLocaleString()
+          usedCommands: (await db.get<TotalCommandsUsedDB>("totalCommandsUsed") || 0).toLocaleString()
         });
 
       client.user!.setPresence({
@@ -39,7 +40,9 @@ export default async (client: DiscordClient) => {
         ]
       });
     }, config.discord.status_loop);
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 };

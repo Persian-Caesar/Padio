@@ -46,7 +46,9 @@ export default async (client: DiscordClient, interaction: StringSelectMenuIntera
       return;
     }
 
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

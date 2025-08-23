@@ -46,7 +46,9 @@ export default async function SendGuildAlert({
 
     try {
       owner = await guild.fetchOwner() || (await (await guild.fetch()).fetchOwner());
-    } catch { }
+    }
+
+    catch { }
 
     const guildCreatedAt = Date.parse(guild.createdAt.toString()) / 1000;
     const embed = new EmbedBuilder()
@@ -92,11 +94,15 @@ export default async function SendGuildAlert({
           iconURL: owner!.user.displayAvatarURL({ forceStatic: true })
         }
       )
-    } catch { }
+    }
+
+    catch { }
 
     messageData.embeds = [embed];
     return await channel!.send(messageData);
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e)
   }
 }

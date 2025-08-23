@@ -24,7 +24,9 @@ export default async (client: DiscordClient, interaction: AutocompleteInteractio
         break;
       }
     }
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

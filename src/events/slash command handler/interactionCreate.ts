@@ -46,24 +46,45 @@ export default async (client: DiscordClient, interaction: Interaction) => {
           return;
 
         // Use flags conditionally
-        const ephemeralOption = interaction.options
-          ? interaction.options.getString("ephemeral") === "true"
-          : false;
+        const isEphemeralOption = interaction.options.getString("ephemeral") === "true";
 
-        // Command Handler 
-        await repeatAction(
-          async () =>
-            await interaction.deferReply({
-              flags: ephemeralOption ? MessageFlags.Ephemeral : undefined,
-              withResponse: true
-            })
+        // 3 tries to defer reply
+        let subcommand: string | null = null;
+        if (interaction.options.data.length && interaction.options.data[0].type === 1)
+          try {
+            subcommand = interaction.options.getSubcommand();
+          }
+
+          catch { }
+
+        const hasEphemeralOption = command.data.options?.some(option =>
+          option.name === "ephemeral" ||
+          (subcommand && option.options?.filter(sub => sub.name == subcommand)?.some(subOption => subOption.name === "ephemeral"))
         );
 
+        if (
+          hasEphemeralOption
+          // || (subcommand && !["subCommandName"].includes(subcommand))
+        )
+          await repeatAction(
+            async () =>
+              await interaction.deferReply({
+                flags: isEphemeralOption ? MessageFlags.Ephemeral : undefined,
+                withResponse: true
+              })
+          )
+
+
+        // Count the new command
         await db.add("totalCommandsUsed", 1);
+
+        // Command Handler 
         return await command.run(client, interaction);
       }
     }
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

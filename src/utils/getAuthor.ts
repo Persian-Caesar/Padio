@@ -2,7 +2,7 @@ import { isBaseInteraction } from "./interactionTools";
 import { Respondable } from "../types/types";
 import error from "./error";
 
-export default function (interaction: Respondable ) {
+export default function (interaction: Respondable) {
   try {
     if (isBaseInteraction(interaction))
       return interaction.user;
@@ -10,7 +10,9 @@ export default function (interaction: Respondable ) {
     else
       return interaction.author;
 
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

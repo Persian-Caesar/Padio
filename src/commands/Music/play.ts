@@ -93,19 +93,20 @@ export default {
             })
           );
 
-      const firstChoice = Object
-        .keys(radiostation)
-        .filter(a =>
-          a.toLowerCase().startsWith(query?.toLowerCase() || "")
-        ).random();
-
-      if (!query || !firstChoice)
+      if (!query)
         return await responseError(
           interaction,
           language.replies.invalidQuery.replaceValues({
             stations: JSON.stringify(Object.keys(radiostation))
           })
         );
+
+      const firstChoice = Object
+        .keys(radiostation)
+        .filter(a =>
+          (a.toLowerCase()).startsWith(query.toLowerCase() || "")
+        )
+        .random();
 
       // Start to playe
       const player = new MusicPlayer(interaction);
@@ -119,7 +120,9 @@ export default {
       });
 
       return
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

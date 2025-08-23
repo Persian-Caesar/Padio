@@ -1,3 +1,4 @@
+import { GuildMember } from "discord.js";
 import { Respondable } from "../types/types";
 import { LanguageDB } from "../types/database";
 import DatabaseProperties from "./DatabaseProperties";
@@ -13,10 +14,10 @@ export default async function (interaction: Respondable) {
     const database = DatabaseProperties(interaction.guildId!);
     const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
     const language = selectLanguage(lang);
-    const member = interaction.guild!.members.cache.get(interaction.member!.user.id);
+    const member = interaction.member as GuildMember;
     const channel = member?.voice?.channel;
 
-    if (!channel) {
+    if (!channel || !channel.id) {
       await responseError(
         interaction,
         language.replies.noChannelError
@@ -80,7 +81,9 @@ export default async function (interaction: Respondable) {
     }
 
     return false;
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

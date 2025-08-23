@@ -185,7 +185,9 @@ export default {
           channel: channel?.toString()!
         })
       });
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

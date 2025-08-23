@@ -121,7 +121,9 @@ export default {
           volume: input.toString()
         })
       });
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

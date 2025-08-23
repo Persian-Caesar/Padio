@@ -20,7 +20,9 @@ export default async (client: DiscordClient) => {
                 "S"
             );
         });
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
         error(e)
     }
 };
@@ -51,7 +53,9 @@ async function loadCommand(dirname: string, type: "only_slash" | "only_message",
 
         };
 
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
         error(e)
     }
 }

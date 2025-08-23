@@ -26,7 +26,9 @@ export default function (data: any, name: string, color1?: Color, color2?: Color
 
     else
       console.log(message + `${data}`[textColor]);
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

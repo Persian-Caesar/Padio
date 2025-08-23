@@ -175,7 +175,8 @@ export default class {
 
     private async playNext() {
         try {
-            if (!this.queue.length) return;
+            if (!this.queue.length)
+                return;
 
             this.currentTrackIndex++;
             if (this.currentTrackIndex >= this.queue.length) {
@@ -233,8 +234,8 @@ export default class {
         return shuffled;
     }
 
-    error(message: string) {
-        class error extends Error {
+    private error(message: string) {
+        class PlayerError extends Error {
 
             constructor(error: any) {
                 super();
@@ -251,7 +252,7 @@ export default class {
             }
         }
 
-        return new error(message);
+        return new PlayerError(message);
     }
 }
 /**

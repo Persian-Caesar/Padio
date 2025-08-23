@@ -11,7 +11,9 @@ export default async function <T>(
   while (attempts < maxAttempts) {
     try {
       return await action();
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       attempts++;
       if (attempts === maxAttempts)
         error(e);

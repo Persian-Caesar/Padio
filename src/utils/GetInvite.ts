@@ -19,7 +19,9 @@ export default async function GetInvite(guild: Guild) {
           ?.random(1)[0] as TextChannel
       )?.createInvite(inviteData) ||
       guild.invites?.cache?.first();
-  } catch {
+  }
+
+  catch {
     return null;
   }
 }

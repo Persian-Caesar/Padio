@@ -100,7 +100,9 @@ export default function error(error: any) {
     else
       console.log(error);
 
-  } catch (e) {
+  }
+
+  catch (e) {
     post("Error logger to discord webhook have bug!!", "E", "red", "red");
     console.log(e);
     post("Main Error:", "E", "red", "red");

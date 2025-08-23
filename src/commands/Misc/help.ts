@@ -251,7 +251,9 @@ export default {
 
         return description.join("\n\n");
       }
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

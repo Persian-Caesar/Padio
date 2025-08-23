@@ -1,11 +1,11 @@
-export default function (input: string) { 
+export default function (input: string) {
   const match = input.match(/^(\d+)(s|m|h|d)$/);
   if (!match)
     return null;
 
   const
-   value = parseInt(match[1], 10),
-   unit = match[2];
+    value = parseInt(match[1], 10),
+    unit = match[2];
 
   switch (unit) {
     case "s": return value * 1000;

@@ -98,7 +98,9 @@ export default {
             .join(" ")
             .replace(name + ":", "");
       }
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

@@ -77,12 +77,14 @@ export default {
           language.commands.afk.replies.noPlayerError
         );
 
-      queue.stop();
+      queue.stop(true);
 
       return await response(interaction, {
         content: language.commands.stop.replies.stopped
       });
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

@@ -26,7 +26,9 @@ export default async (client: DiscordClient, interaction: ButtonInteraction) => 
       return;
     };
 
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

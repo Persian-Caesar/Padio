@@ -40,7 +40,9 @@ export default async () => {
         await db.init();
 
         return { db, dbType: config.source.database.type.toLocaleUpperCase() };
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
         post(`Database Doesn't Work!!`.red, "E", "red", "red")
         error(e);
     }

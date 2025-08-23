@@ -192,7 +192,9 @@ export default {
           msg
         )
       });
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

@@ -58,7 +58,9 @@ export default async (client: DiscordClient) => {
         try {
           if (status_message)
             msg = channel.messages.cache.get(status_message);
-        } catch { };
+        }
+
+        catch { };
 
         if (status_message && msg) {
           // No auto update message
@@ -84,7 +86,9 @@ export default async (client: DiscordClient) => {
     };
 
     return;
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 };

@@ -102,7 +102,9 @@ export default {
         .setTimestamp();
 
       return await responseEdit(interaction, { embeds: [embed2] }, message);
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

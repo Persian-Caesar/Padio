@@ -1,6 +1,6 @@
 import {
   Collection,
-  ChatInputCommandInteraction
+  CommandInteraction
 } from "discord.js";
 import { isBaseInteraction } from "./interactionTools";
 import { Respondable } from "../types/types";
@@ -22,7 +22,7 @@ export default async function checkCmdCooldown(
   try {
     const
       db = client.db!,
-      userId = (isBaseInteraction(interaction ) ? interaction.user.id : interaction.author?.id),
+      userId = (isBaseInteraction(interaction) ? interaction.user.id : interaction.author?.id),
       databaseNames = DatabaseProperties(interaction.guildId!),
       lang = (await db.get<LanguageDB>(databaseNames.language)) || config.discord.default_language,
       language = selectLanguage(lang).replies,
@@ -31,8 +31,8 @@ export default async function checkCmdCooldown(
           ? ` ${command.data.options.find((a) => a.name === args![0])!.name}`
           : ""
         }\``
-        : `</${command.data.name}${interaction instanceof ChatInputCommandInteraction && interaction.options?.data.some((a) => a.type === 1)
-          ? ` ${interaction.options.data.find((a) => a.type === 1)!.name}`
+        : `</${command.data.name}${interaction instanceof CommandInteraction && interaction.command?.options?.some((a) => a.type === 1)
+          ? ` ${interaction.command?.options.find((a) => a.type === 1)!.name}`
           : ""
         }:${command.data.id}>`;
 
@@ -63,7 +63,9 @@ export default async function checkCmdCooldown(
     setTimeout(() => timestamps.delete(userId), cooldownAmount);
 
     return false;
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

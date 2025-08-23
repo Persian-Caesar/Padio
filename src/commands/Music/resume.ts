@@ -82,7 +82,9 @@ export default {
       return await response(interaction, {
         content: language.commands.resume.replies.resumed
       });
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

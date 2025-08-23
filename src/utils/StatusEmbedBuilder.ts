@@ -1,8 +1,11 @@
+import {
+  Language,
+  PackageJson
+} from "../types/interfaces";
 import { EmbedBuilder } from "discord.js";
-import { Language } from "../types/interfaces";
+import { readFileSync } from "fs";
 import selectLanguage from "./selectLanguage";
 import DiscordClient from "../model/Client";
-import packageJson from "../../package.json";
 import EmbedData from "../storage/EmbedData";
 import config from "../../config";
 import error from "./error";
@@ -14,6 +17,8 @@ export default async function (client: DiscordClient, language: Language = defau
   try {
     const db = client.db!;
     const readyTimestamp = client.readyTimestamp!;
+    const packageJson: PackageJson = JSON.parse(readFileSync("../../package.json", "utf8"));
+    
     return new EmbedBuilder()
       .setColor(EmbedData.color.theme.HexToNumber())
       .setTitle(language.replies.status.title)
@@ -61,7 +66,9 @@ export default async function (client: DiscordClient, language: Language = defau
           }
         ]
       ).toJSON();
-  } catch (e) {
+  }
+
+  catch (e) {
     error(e);
   }
 }

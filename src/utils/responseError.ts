@@ -50,12 +50,13 @@ export default async function responseError(
       };
 
     if (isBaseInteraction(interaction)) {
-      data.flags = MessageFlags.Ephemeral;
-      if (isUpdateNeed && "editReply" in interaction)
+      if ("editReply" in interaction && interaction.deferred)
         return await repeatAction(async () => await interaction.editReply(data as InteractionEditReplyOptions))
 
-      else if ("reply" in interaction)
+      else if ("reply" in interaction) {
+        data.flags = MessageFlags.Ephemeral;
         return await repeatAction(async () => await interaction.reply(data as InteractionReplyOptions));
+      }
 
       return;
     }
@@ -67,7 +68,9 @@ export default async function responseError(
       else
         return await repeatAction(async () => await interaction.reply(data as MessageReplyOptions));
 
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

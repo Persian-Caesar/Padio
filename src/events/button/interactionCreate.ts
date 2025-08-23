@@ -39,7 +39,9 @@ export default async (client: DiscordClient, interaction: ButtonInteraction) => 
           language.onlyOwner
         );
 
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

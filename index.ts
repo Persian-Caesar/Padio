@@ -86,10 +86,13 @@ import {
     Routes,
     version
 } from "discord.js";
-import { readdirSync } from "fs";
+import {
+    readdirSync,
+    readFileSync
+} from "fs";
+import { PackageJson } from "./src/types/interfaces";
 import selectLanguage from "./src/utils/selectLanguage";
 import DiscordClient from "./src/model/Client";
-import packageJSON from "./package.json";
 import Database from "./src/model/Database";
 import config from "./config";
 import error from "./src/utils/error";
@@ -104,6 +107,7 @@ import logger from "./src/functions/logger";
 // Load discord client
 const client = new DiscordClient();
 const handle = readdirSync(__dirname + "/src/handlers").filter(file => file.endsWith(".js"));
+const packageJSON: PackageJson = JSON.parse(readFileSync("./package.json", "utf8"));
 
 // Login 
 const main = async () => {
@@ -273,7 +277,9 @@ const main = async () => {
         else
             post(defaultLanguage.replies.noTokenError, "red", "red");
 
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
         error(e);
         await client.destroy();
         process.exit(1);

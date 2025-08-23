@@ -20,7 +20,9 @@ export default function (data: any) {
 
     else
       console.log(logstring + data);
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

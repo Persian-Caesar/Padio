@@ -20,8 +20,10 @@ export default async function responseDelete(
 
       return;
     }
-    
-  } catch (e: any) {
+
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

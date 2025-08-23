@@ -36,7 +36,9 @@ export default async (client: DiscordClient) => {
     );
 
     return;
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 };

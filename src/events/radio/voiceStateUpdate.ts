@@ -44,7 +44,9 @@ export default async (client: DiscordClient, oldState: VoiceState, newState: Voi
     if (botDisconnected)
       return player.join();
 
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }

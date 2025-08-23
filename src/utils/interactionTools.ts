@@ -3,6 +3,7 @@ import {
   BaseInteraction,
   ButtonBuilder,
   ButtonStyle,
+  ChatInputCommandInteraction,
   CommandInteraction,
   CommandInteractionOptionResolver,
   EmbedBuilder,
@@ -50,48 +51,30 @@ export function createConfirmationMessage(
   };
 }
 
-type OptionMethodMap = {
-  [K in keyof CommandInteractionOptionResolver]?: (
+type OptionMethod = {
+  [K in keyof CommandInteractionOptionResolver]: CommandInteractionOptionResolver[K] extends (
     this: CommandInteractionOptionResolver,
-    name: string,
-    required?: boolean
-  ) => unknown;
-};
-
-const optionMethodMap: OptionMethodMap = {
-  getString: (name, required) => CommandInteractionOptionResolver.prototype.getString.call(this, name, required),
-  getNumber: (name, required) => CommandInteractionOptionResolver.prototype.getNumber.call(this, name, required),
-  getInteger: (name, required) => CommandInteractionOptionResolver.prototype.getInteger.call(this, name, required),
-  getBoolean: (name, required) => CommandInteractionOptionResolver.prototype.getBoolean.call(this, name, required),
-  getChannel: (name, required) => CommandInteractionOptionResolver.prototype.getChannel.call(this, name, required),
-  getUser: (name, required) => CommandInteractionOptionResolver.prototype.getUser.call(this, name, required),
-  getMember: (name) => CommandInteractionOptionResolver.prototype.getMember.call(this, name),
-  getRole: (name, required) => CommandInteractionOptionResolver.prototype.getRole.call(this, name, required),
-  getMentionable: (name, required) => CommandInteractionOptionResolver.prototype.getMentionable.call(this, name, required),
-  getAttachment: (name, required) => CommandInteractionOptionResolver.prototype.getAttachment.call(this, name, required),
-  getMessage: (name, required) => CommandInteractionOptionResolver.prototype.getMessage.call(this, name, required),
-  getFocused: (required) => CommandInteractionOptionResolver.prototype.getFocused.call(required),
-  getSubcommand: () => CommandInteractionOptionResolver.prototype.getSubcommand.call(this, true),
-  getSubcommandGroup: () => CommandInteractionOptionResolver.prototype.getSubcommandGroup.call(this),
-};
+    ...args: any[]
+  ) => any
+  ? K
+  : never;
+}[keyof CommandInteractionOptionResolver];
 
 export function getOption<T>(
   interaction: Respondable,
-  method: keyof typeof optionMethodMap,
+  method: keyof CommandInteractionOptionResolver,
   optionName?: string,
   fallbackIndex?: number,
   args?: string[]
 ): T | null {
-  if (interaction instanceof CommandInteraction && interaction.command!.options instanceof CommandInteractionOptionResolver) {
-    const methodFn = optionMethodMap[method];
-    if (methodFn) {
-      return methodFn.call(interaction.command!.options, optionName!) as T;
-    }
+  const options = (interaction as any).options as any;
 
-    throw new Error(`Unsupported method: ${method}`);
+  const fn = options[method] as any;
+  if (typeof fn === "function") {
+    return fn.call(options, optionName, true) as T;
   }
 
-  return args && args[fallbackIndex!] ? (args[fallbackIndex!] as unknown as T) : null;
+  return (args?.[fallbackIndex!] as unknown as T) ?? null;
 }
 
 export function getChannel<T>(interaction: Respondable, optionName?: string, fallbackIndex?: number, args?: string[]) {

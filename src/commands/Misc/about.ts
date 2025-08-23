@@ -83,7 +83,9 @@ export default {
         embeds,
         components
       });
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

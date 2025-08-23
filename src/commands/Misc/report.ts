@@ -80,7 +80,9 @@ export default {
           ]
         })
       }
-    } catch (e: any) {
+    }
+
+    catch (e: any) {
       error(e)
     }
   }

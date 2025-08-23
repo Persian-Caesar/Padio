@@ -18,7 +18,9 @@ export default async function (
 
     else if (message)
       return await repeatAction(async () => await message.edit(data as MessageEditOptions));
-  } catch (e: any) {
+  } 
+
+catch (e: any) {
     error(e);
   }
 }

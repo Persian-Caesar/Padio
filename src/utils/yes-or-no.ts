@@ -27,7 +27,9 @@ export default async function yesOrNo(
     collector?.on("end", async () => await responseDelete(interaction, interaction instanceof Message ? interaction : null))
 
     return;
-  } catch (e: any) {
+  }
+
+  catch (e: any) {
     error(e);
   }
 }
