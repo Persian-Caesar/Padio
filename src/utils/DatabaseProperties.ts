@@ -1,4 +1,4 @@
-export default function DatabaseProperties(id1: string, id2?: string) {
+export default function (id1: string, id2?: string) {
   return {
     language: `language.${id1}`,
     prefix: `prefix.${id1}`,
