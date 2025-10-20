@@ -17,11 +17,12 @@ export default class DiscordClient extends Client {
         if (!options)
             options = {
                 intents: [
+                    "Guilds",
                     "GuildBans",
                     "GuildMembers",
                     "GuildMessages",
                     "GuildWebhooks",
-                    "Guilds",
+                    "GuildVoiceStates",
                     "MessageContent"
                 ],
                 partials: [

@@ -16,11 +16,16 @@ import error from "../../utils/error";
 export default async (client: DiscordClient) => {
   try {
     const trigger_interval = 1000 * 60 * 60; // every 1 hours
-
+    if (config.discord.support.id.length < 1)
+      return;
+    
     const db = client.db!;
     const defaultLanguage = selectLanguage(config.discord.default_language);
     const guild = client.guilds.cache.get(config.discord.support.id)!;
-    const database = DatabaseProperties(guild.id!);
+    if (!guild)
+      return;
+
+    const database = DatabaseProperties(guild.id);
     const channel = client.channels.cache.get(config.discord.support.stats_channel) as TextChannel;
 
     if (guild && channel) {
