@@ -32,49 +32,6 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Adding "toCapitalize" method to String class. | ts type is in ./src/types/global.d.ts
-String.prototype.toCapitalize = function (): string {
-    return String(this).toLowerCase().replace(/\b\w/g, char => char.toUpperCase())
-}
-// Adding "replaceValues" method to String class. | ts type is in ./src/types/global.d.ts
-String.prototype.replaceValues = function (object: Record<string, any>): string {
-    let string = String(this);
-    Object
-        .keys(object)
-        .forEach(a => {
-            string = string.replace(`{${a}}`, object[a]);
-        });
-
-    return string;
-}
-// Adding "HexToNumber" method to String class. | ts type is in ./src/types/global.d.ts
-String.prototype.HexToNumber = function (): number {
-    return parseInt(this.replace("#", ""), 16)
-}
-// Adding "convertToPersianString" method to String class. | ts type is in ./src/types/global.d.ts
-String.prototype.convertToPersianString = function (): string {
-    return this.replace(/\d+/g, (match) => {
-        const number = parseInt(match, 10);
-
-        return number.toLocaleString("fa-IR");
-    });
-}
-
-// Adding "random" method to Array class. | ts type is in ./src/types/global.d.ts
-Array.prototype.random = function () {
-    const array = Array.from(this);
-    return array[Math.floor(Math.random() * array.length)]
-}
-// Adding "chunk" method to Array class. | ts type is in ./src/types/array.d.ts
-Array.prototype.chunk = function (size) {
-    const array = Array.from(this);
-    const result = [];
-    for (let i = 0; i < array.length; i += size)
-        result.push(array.slice(i, i + size));
-
-    return result;
-}
-
 import {
     cpus,
     freemem,
@@ -91,12 +48,16 @@ import {
     readFileSync
 } from "fs";
 import { PackageJson } from "./src/types/interfaces";
+import setupGlobalExtensions from "./src/functions/setupGlobalExtensions";
 import selectLanguage from "./src/utils/selectLanguage";
 import DiscordClient from "./src/model/Client";
 import Database from "./src/model/Database";
 import config from "./config";
 import error from "./src/utils/error";
 import post from "./src/functions/post";
+
+// Adds custom methods to global prototypes (String, Array, Number)
+setupGlobalExtensions();
 
 const defaultLanguage = selectLanguage(config.discord.default_language);
 

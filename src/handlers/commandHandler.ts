@@ -1,6 +1,6 @@
-import selectLanguage from "../utils/selectLanguage";
 import { CommandType } from "../types/interfaces";
 import { readdirSync } from "fs";
+import selectLanguage from "../utils/selectLanguage";
 import DiscordClient from "../model/Client";
 import error from "../utils/error";
 import post from "../functions/post";
