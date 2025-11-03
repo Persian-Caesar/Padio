@@ -5,7 +5,7 @@ import DatabaseProperties from "./DatabaseProperties";
 import selectLanguage from "./selectLanguage";
 import responseError from "./responseError";
 import config from "../../config";
-import client from "../..";
+import client from "../../index";
 import error from "./error";
 
 export default async function (interaction: Respondable) {
