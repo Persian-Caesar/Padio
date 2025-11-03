@@ -376,6 +376,8 @@ export interface ConfigType {
             invite: string, // Support server invite link.
             id: string, // Support server Id.
             stats_channel: string, // Id of  channel to send bot stats on discord.
+            update_stats_message: boolean, // Activate auto bot status message updator.
+            update_stats_interval: number, // Interval timer for update status message it's by default 1 hours.
             webhook: {
                 url: string, // Webhook logger url.
                 avatar: string, // Webhook logger avatar.

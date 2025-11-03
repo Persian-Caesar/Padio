@@ -5,12 +5,11 @@ import {
   PermissionsBitField
 } from "discord.js";
 import { CommandType } from "../../types/interfaces";
-import { LanguageDB } from "../../types/database";
-import DatabaseProperties from "../../utils/DatabaseProperties";
 import selectLanguage from "../../utils/selectLanguage";
 import responseEdit from "../../utils/responseEdit";
 import EmbedData from "../../storage/EmbedData";
 import response from "../../utils/response";
+import dbAccess from "../../utils/dbAccess";
 import config from "../../../config";
 import error from "../../utils/error";
 import os from "os";
@@ -59,8 +58,8 @@ export default {
 
   run: async (client, interaction, args) => {
     try {
-      const db = client.db!;
-      const lang = (await db.get<LanguageDB>(DatabaseProperties(interaction.guildId!).language)) || config.discord.default_language;
+      const guildId = interaction.guildId!;
+      const lang = (await dbAccess.getLanguage(guildId)) || config.discord.default_language;
       const language = selectLanguage(lang).commands.ping;
       const embed1 = new EmbedBuilder()
         .setColor(EmbedData.color.theme.HexToNumber())

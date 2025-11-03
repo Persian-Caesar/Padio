@@ -8,11 +8,9 @@ import {
 } from "discord.js";
 import { CommandType } from "../types/interfaces";
 import { Respondable } from "../types/types";
-import { LanguageDB } from "../types/database";
-import DatabaseProperties from "./DatabaseProperties";
 import selectLanguage from "./selectLanguage";
 import responseError from "./responseError";
-import client from "../..";
+import dbAccess from "./dbAccess";
 import error from "./error";
 
 export default async function checkCmdPerms(
@@ -23,9 +21,8 @@ export default async function checkCmdPerms(
 ): Promise<boolean | void> {
   try {
     const
-      db = client.db!,
-      databaseNames = DatabaseProperties(interaction.guildId!),
-      lang = await db.get<LanguageDB>(databaseNames.language),
+      guildId = interaction.guildId!,
+      lang = await dbAccess.getLanguage(guildId),
       language = selectLanguage(lang).replies,
       mentionCommand = prefix
         ? `\`${prefix + command.data.name}${command.data.options?.some((a) => a.type === 1 && a.name === args?.[0])

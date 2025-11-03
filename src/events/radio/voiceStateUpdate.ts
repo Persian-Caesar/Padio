@@ -6,26 +6,27 @@ import {
   AfkDB,
   StationDB
 } from "../../types/database";
-import DatabaseProperties from "../../utils/DatabaseProperties";
+import DatabaseProperties from "../../utils/dbAccess";
 import DiscordClient from "../../model/Client";
 import radiostation from "../../storage/radiostation.json";
 import MusicPlayer from "../../model/MusicPlayer";
 import error from "../../utils/error";
+import dbAccess from "../../utils/dbAccess";
 
 export default async (client: DiscordClient, oldState: VoiceState, newState: VoiceState) => {
   try {
 
-    const db = client.db!;
     const state = oldState || newState;
-    const database = DatabaseProperties(state.guild.id);
+    const guildId = state.guild.id;
 
-    const channelId = await db.get<AfkDB>(database.afk);
-    const station = await db.get<StationDB>(database.station) || "Lofi Radio";
+    const channelId = await dbAccess.getAfk(guildId);
+    if (!channelId)
+      return;
+
+    const station = await dbAccess.getStation(guildId) || "Lofi Radio";
     const oldHumansInVoiceSize = oldState.channel?.members?.filter(a => !a.user.bot)?.size || 0;
     const newHumansInVoiceSize = newState.channel?.members?.filter(a => !a.user.bot)?.size || 0;
     const botDisconnected = oldState.member?.id === client.user!.id && !newState.channelId;
-
-    if (!channelId) return;
 
     const player = new MusicPlayer()
       .setData({

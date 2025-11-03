@@ -4,12 +4,11 @@ import {
   PermissionsBitField
 } from "discord.js";
 import { CommandType } from "../../types/interfaces";
-import { LanguageDB } from "../../types/database";
-import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkPlayerPerms from "../../utils/checkPlayerPerms";
 import selectLanguage from "../../utils/selectLanguage";
 import responseError from "../../utils/responseError";
 import MusicPlayer from "../../model/MusicPlayer";
+import dbAccess from "../../utils/dbAccess";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
@@ -60,9 +59,8 @@ export default {
 
   run: async (client, interaction, args) => {
     try {
-      const db = client.db!;
-      const database = DatabaseProperties(interaction.guildId!);
-      const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
+      const guildId = interaction.guildId!;
+      const lang = (await dbAccess.getLanguage(guildId)) || config.discord.default_language;
       const language = selectLanguage(lang);
 
       // Check perms

@@ -1,25 +1,22 @@
 import {
-  GuildMember,
   MessageFlags,
   StringSelectMenuInteraction
 } from "discord.js";
-import { LanguageDB } from "../../types/database";
-import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkPlayerPerms from "../../utils/checkPlayerPerms";
 import selectLanguage from "../../utils/selectLanguage";
 import DiscordClient from "../../model/Client";
 import radiostation from "../../storage/radiostation.json";
+import MusicPlayer from "../../model/MusicPlayer";
+import dbAccess from "../../utils/dbAccess";
 import config from "../../../config";
 import error from "../../utils/error";
-import MusicPlayer from "../../model/MusicPlayer";
 
 export default async (client: DiscordClient, interaction: StringSelectMenuInteraction) => {
   try {
     if (!interaction.isStringSelectMenu()) return;
 
-    const db = client.db!;
-    const database = DatabaseProperties(interaction.guildId!);
-    const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
+    const guildId = interaction.guildId!;
+    const lang = (await dbAccess.getLanguage(guildId)) || config.discord.default_language;
     const language = selectLanguage(lang);
 
     if (interaction.customId.startsWith("radioPanel")) {
@@ -33,7 +30,7 @@ export default async (client: DiscordClient, interaction: StringSelectMenuIntera
       // Start to play station
       const radio = new MusicPlayer(interaction);
 
-      await db.set(database.station, choice);
+      await dbAccess.setStation(guildId, choice);
 
       await radio.radio(radiostation[choice as "Persian Rap"]);
 

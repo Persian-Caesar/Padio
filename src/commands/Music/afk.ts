@@ -11,21 +11,17 @@ import {
   PermissionsBitField,
   VoiceChannel
 } from "discord.js";
-import {
-  AfkDB,
-  LanguageDB
-} from "../../types/database";
-import { getChannel } from "../../utils/interactionTools";
 import { CommandType } from "../../types/interfaces";
-import DatabaseProperties from "../../utils/DatabaseProperties";
+import { getChannel } from "../../utils/interactionTools";
 import selectLanguage from "../../utils/selectLanguage";
 import responseDelete from "../../utils/responseDelete";
 import responseError from "../../utils/responseError";
+import MusicPlayer from "../../model/MusicPlayer";
 import EmbedData from "../../storage/EmbedData";
 import response from "../../utils/response";
+import dbAccess from "../../utils/dbAccess";
 import config from "../../../config";
 import error from "../../utils/error";
-import MusicPlayer from "../../model/MusicPlayer";
 
 const defaultLanguage = selectLanguage(config.discord.default_language).commands.afk;
 const ephemeral = selectLanguage(config.discord.default_language).replies.ephemeral;
@@ -81,9 +77,8 @@ export default {
 
   run: async (client, interaction, args) => {
     try {
-      const db = client.db!;
-      const database = DatabaseProperties(interaction.guildId!);
-      const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
+      const guildId = interaction.guildId!;
+      const lang = (await dbAccess.getLanguage(guildId)) || config.discord.default_language;
       const language = selectLanguage(lang).commands.afk;
       const memberChannelId = (interaction.member as GuildMember)?.voice?.channelId;
 
@@ -94,7 +89,7 @@ export default {
       if (!channel && memberChannelId)
         channel = (interaction.member as GuildMember)?.voice?.channel as VoiceChannel;
 
-      const afkChannel = await db.get<AfkDB>(database.afk);
+      const afkChannel = await dbAccess.getAfk(guildId);
       if (!channel && afkChannel) {
         const message = (await response(
           interaction,
@@ -148,7 +143,7 @@ export default {
           switch (button.customId) {
             case "afk-accept": {
               await button.deferUpdate();
-              await db.delete(database.afk);
+              await dbAccess.deleteAfk(guildId);
               return await button.editReply({
                 content: language.replies.deleteChannel,
                 embeds: [],
@@ -179,7 +174,7 @@ export default {
           language.replies.noPlayerError
         );
 
-      await db.set(database.afk, channel!.id);
+      await dbAccess.setAfk(guildId, channel!.id);
       return await response(interaction, {
         content: language.replies.success.replaceValues({
           channel: channel?.toString()!

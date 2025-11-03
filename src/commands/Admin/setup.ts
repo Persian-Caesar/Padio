@@ -12,23 +12,18 @@ import {
   TextChannel
 } from "discord.js";
 import {
-  LanguageDB,
-  PanelDB,
-  PrefixDB
-} from "../../types/database";
-import {
   getChannel,
   getOption
 } from "../../utils/interactionTools";
 import { CommandType } from "../../types/interfaces";
 import { Languages } from "../../types/types";
-import DatabaseProperties from "../../utils/DatabaseProperties";
 import responseDelete from "../../utils/responseDelete";
 import selectLanguage from "../../utils/selectLanguage";
 import responseError from "../../utils/responseError";
 import radiostation from "../../storage/radiostation.json";
 import languages from "../../storage/languages.json";
 import EmbedData from "../../storage/EmbedData";
+import dbAccess from "../../utils/dbAccess";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
@@ -170,10 +165,10 @@ export default {
   run: async (client, interaction, args) => {
     try {
       const db = client.db!;
-      const database = DatabaseProperties(interaction.guildId!);
-      const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
+      const guildId = interaction.guildId!;
+      const lang = (await dbAccess.getLanguage(guildId)) || config.discord.default_language;
       const language = selectLanguage(lang);
-      const prefix = (await db.get<PrefixDB>(database.prefix)) || `${config.discord.prefix}`;
+      const prefix = (await dbAccess.getPrefix(guildId)) || `${config.discord.prefix}`;
       const setup = client.commands.get("setup")!;
 
       const subcommand = getOption<string>(interaction, "getSubcommand", undefined, 0, args);
@@ -181,7 +176,7 @@ export default {
         case "panel": {
           const channel = getChannel<TextChannel>(interaction, "channel", 1, args);
 
-          const radioPanel = await db.get<PanelDB>(database.panel);
+          const radioPanel = (await dbAccess.getPanel(guildId));
           if (!channel && radioPanel) {
             const message = await response(interaction, {
               embeds: [
@@ -230,7 +225,7 @@ export default {
               switch (button.customId) {
                 case "setup-accept": {
                   await button.deferUpdate();
-                  await db.delete(database.panel);
+                  await dbAccess.deletePanel(guildId);
                   return await button.editReply({
                     content: language.commands.setup.subCommands.panel.replies.deleteChannel,
                     embeds: [],
@@ -280,7 +275,10 @@ export default {
               components: components
             });
 
-            await db.set(database.panel, { channel: channel.id, message: message.id });
+            await dbAccess.setPanel(guildId,
+              { channel: channel.id, message: message.id }
+            );
+
             return await response(interaction, {
               content: language.commands.setup.subCommands.panel.replies.success.replaceValues({ channel: channel.id })
             });
@@ -289,7 +287,7 @@ export default {
 
         case "prefix": {
           const newPrefix = getOption<string>(interaction, "getString", "input", 1, args);
-          const lastPrefix = await db.get<PrefixDB>(database.prefix);
+          const lastPrefix = await dbAccess.getPrefix(guildId);
           if (!newPrefix && lastPrefix) {
             const message = await response(interaction, {
               embeds: [
@@ -337,7 +335,7 @@ export default {
               switch (button.customId) {
                 case "setup-accept": {
                   await button.deferUpdate();
-                  await db.delete(database.prefix);
+                  await dbAccess.deletePrefix(guildId);
                   return await button.editReply({
                     content: language.commands.setup.subCommands.prefix.replies.deletePrefix.replaceValues({ prefix: config.discord.prefix }),
                     embeds: [],
@@ -363,7 +361,8 @@ export default {
             )
 
           else {
-            await db.set(database.prefix, newPrefix);
+            await dbAccess.setPrefix(guildId, newPrefix);
+
             return await response(interaction, {
               content: language.commands.setup.subCommands.prefix.replies.success.replaceValues({ prefix: newPrefix })
             });
@@ -378,7 +377,7 @@ export default {
                 a.startsWith(newlanguage) || languages[a as Languages].toLowerCase().startsWith(newlanguage?.toLowerCase())
               ).random();
 
-          const lastlanguage = await db.get<LanguageDB>(database.language);
+          const lastlanguage = await dbAccess.getLanguage(guildId);
           if (!newlanguage && lastlanguage) {
             const message = await response(interaction, {
               embeds: [
@@ -426,7 +425,7 @@ export default {
               switch (button.customId) {
                 case "setup-accept": {
                   await button.deferUpdate();
-                  await db.delete(database.language);
+                  await dbAccess.deleteLanguage(guildId);
                   return await button.editReply({
                     content: language.commands.setup.subCommands.language.replies.deleteLanguage.replaceValues({ language: config.discord.default_language }),
                     embeds: [],
@@ -454,7 +453,8 @@ export default {
             )
 
           else {
-            await db.set(database.language, firstChoice);
+            await dbAccess.setLanguage(guildId, firstChoice);
+
             return await response(interaction, {
               content: language.commands.setup.subCommands.language.replies.success.replaceValues({ language: languages[firstChoice as Languages] })
             });

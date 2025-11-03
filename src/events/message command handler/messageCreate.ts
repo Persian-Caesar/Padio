@@ -3,23 +3,18 @@ import {
     Message,
     TextChannel
 } from "discord.js";
-import {
-    LanguageDB,
-    PrefixDB
-} from "../../types/database";
-import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkCmdCooldown from "../../utils/checkCmdCooldown";
 import selectLanguage from "../../utils/selectLanguage";
 import checkCmdPerms from "../../utils/checkCmdPerms";
 import DiscordClient from "../../model/Client";
-import error from "../../utils/error";
+import dbAccess from "../../utils/dbAccess";
 import config from "../../../config";
+import error from "../../utils/error";
 
 export default async (client: DiscordClient, message: Message) => {
     try {
-        const db = client.db!;
-        const database = DatabaseProperties(message.guildId!);
-        const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
+        const guildId = message.guildId!;
+        const lang = (await dbAccess.getLanguage(guildId)) || config.discord.default_language;
         const language = selectLanguage(lang).replies;
 
         // Filter uncatched messages
@@ -40,7 +35,7 @@ export default async (client: DiscordClient, message: Message) => {
 
         // Command Prefix & args
         const
-            stringPrefix = (await db.get<PrefixDB>(database.prefix)) || `${config.discord.prefix}`,
+            stringPrefix = (await dbAccess.getPrefix(guildId)) || `${config.discord.prefix}`,
             prefixRegex = new RegExp(
                 `^(<@!?${client.user!.id}>|${stringPrefix.toString().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})\\s*`
             );
@@ -95,7 +90,7 @@ export default async (client: DiscordClient, message: Message) => {
                 return;
 
             // Command Handler
-            await db.add("totalCommandsUsed", 1);
+            await dbAccess.addTotalCommandsUsed(1);
             return await command.run(client, message, args);
         }
     }

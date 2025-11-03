@@ -1,36 +1,36 @@
 import {
-  AfkDB,
-  LanguageDB,
-  StationDB,
-  StatusDB
-} from "../../types/database";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Message, TextChannel, VoiceChannel } from "discord.js";
-import DatabaseProperties from "../../utils/DatabaseProperties";
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  EmbedBuilder,
+  Message,
+  TextChannel
+} from "discord.js";
 import StatusEmbedBuilder from "../../utils/StatusEmbedBuilder";
 import selectLanguage from "../../utils/selectLanguage";
 import DiscordClient from "../../model/Client";
 import EmbedData from "../../storage/EmbedData";
+import dbAccess from "../../utils/dbAccess";
 import config from "../../../config";
 import error from "../../utils/error";
 
 export default async (client: DiscordClient) => {
   try {
-    const trigger_interval = 1000 * 60 * 60; // every 1 hours
+    const trigger_interval = config.discord.support.update_stats_interval;
     if (config.discord.support.id.length < 1)
       return;
-    
-    const db = client.db!;
+
     const defaultLanguage = selectLanguage(config.discord.default_language);
     const guild = client.guilds.cache.get(config.discord.support.id)!;
     if (!guild)
       return;
 
-    const database = DatabaseProperties(guild.id);
+    const guildId = guild.id;
     const channel = client.channels.cache.get(config.discord.support.stats_channel) as TextChannel;
 
     if (guild && channel) {
       setInterval(async () => {
-        const status_message = await db.get<StatusDB>(database.status);
+        const status_message = await dbAccess.getStatus(guildId);
 
         const embed = EmbedBuilder.from((await StatusEmbedBuilder(client))!);
         const row = [
@@ -68,10 +68,11 @@ export default async (client: DiscordClient) => {
         catch { };
 
         if (status_message && msg) {
-          // No auto update message
-          // await msg.edit({
-          //   embeds: [embed]
-          // });
+          // auto update message
+          if (config.discord.support.update_stats_message)
+            await msg.edit({
+              embeds: [embed]
+            });
 
           return;
         }
@@ -82,7 +83,7 @@ export default async (client: DiscordClient) => {
             components: row
           })
             .then(async (msg) => {
-              await db.set(database.status, msg.id)
+              await dbAccess.setStatus(guildId, msg.id)
 
               return;
             });

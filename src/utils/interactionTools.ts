@@ -51,15 +51,6 @@ export function createConfirmationMessage(
   };
 }
 
-type OptionMethod = {
-  [K in keyof CommandInteractionOptionResolver]: CommandInteractionOptionResolver[K] extends (
-    this: CommandInteractionOptionResolver,
-    ...args: any[]
-  ) => any
-  ? K
-  : never;
-}[keyof CommandInteractionOptionResolver];
-
 export function getOption<T>(
   interaction: Respondable,
   method: keyof CommandInteractionOptionResolver,

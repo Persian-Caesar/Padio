@@ -1,5 +1,4 @@
 import {
-  ActionRowBuilder,
   EmbedBuilder,
   Interaction,
   MessageFlags,
@@ -7,22 +6,21 @@ import {
   TextInputBuilder,
   TextInputStyle,
   time,
-  WebhookClient
+  WebhookClient,
+  LabelBuilder
 } from "discord.js";
-import { LanguageDB } from "../../types/database";
-import DatabaseProperties from "../../utils/DatabaseProperties";
 import selectLanguage from "../../utils/selectLanguage";
 import DiscordClient from "../../model/Client";
 import GetInvite from "../../utils/GetInvite";
+import EmbedData from "../../storage/EmbedData";
+import dbAccess from "../../utils/dbAccess";
 import config from "../../../config";
 import error from "../../utils/error";
-import EmbedData from "../../storage/EmbedData";
 
 export default async (client: DiscordClient, interaction: Interaction) => {
   try {
-    const db = client.db!;
-    const database = DatabaseProperties(interaction.guildId!);
-    const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
+    const guildId = interaction.guildId!;
+    const lang = (await dbAccess.getLanguage(guildId)) || config.discord.default_language;
     const language = selectLanguage(lang);
     const defaultLanguage = selectLanguage(config.discord.default_language);
 
@@ -31,12 +29,12 @@ export default async (client: DiscordClient, interaction: Interaction) => {
         const modal = new ModalBuilder()
           .setTitle(language.replies.modals.reportModalTitle)
           .setCustomId("reportModal")
-          .addComponents(
-            new ActionRowBuilder<TextInputBuilder>()
-              .addComponents(
+          .addLabelComponents(
+            new LabelBuilder()
+              .setLabel(language.replies.modals.reportModalLabel)
+              .setTextInputComponent(
                 new TextInputBuilder()
                   .setCustomId("reportModalMessage")
-                  .setLabel(language.replies.modals.reportModalLabel)
                   .setPlaceholder(language.replies.modals.reportModalPlaceholder)
                   .setStyle(TextInputStyle.Paragraph)
               )
@@ -60,8 +58,8 @@ export default async (client: DiscordClient, interaction: Interaction) => {
 
           let owner;
           try {
-            owner = await (await interaction.guild.fetchOwner()).user ||
-              await client.users.cache.get(interaction.guild.ownerId);
+            owner = (await interaction.guild.fetchOwner()).user
+              || client.users.cache.get(interaction.guild.ownerId);
           }
 
           catch { }
@@ -111,7 +109,9 @@ export default async (client: DiscordClient, interaction: Interaction) => {
             avatarURL: interaction.user.displayAvatarURL({ forceStatic: true }),
             threadId: config.discord.support.webhook.threads.report
           });
-        } else {
+        }
+
+        else {
           const embed = new EmbedBuilder()
             .setColor(EmbedData.color.theme.HexToNumber())
             .setDescription(

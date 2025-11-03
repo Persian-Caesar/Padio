@@ -1,21 +1,16 @@
-import {
-  AfkDB,
-  StationDB
-} from "../../types/database";
-import DatabaseProperties from "../../utils/DatabaseProperties";
 import DiscordClient from "../../model/Client";
 import radiostation from "../../storage/radiostation.json";
 import MusicPlayer from "../../model/MusicPlayer";
+import dbAccess from "../../utils/dbAccess";
 import error from "../../utils/error";
 
 export default async (client: DiscordClient) => {
   try {
     await Promise.all(
       client.guilds.cache.map(async (guild) => {
-        const db = client.db!;
-        const database = DatabaseProperties(guild.id!);
-        const channelId = await db.get<AfkDB>(database.afk);
-        const station = await db.get<StationDB>(database.station) || "Lofi Radio";
+        const guildId = guild.id!;
+        const channelId = await dbAccess.getAfk(guildId);
+        const station = await dbAccess.getStation(guildId) || "Lofi Radio";
 
         if (channelId) {
           const player = new MusicPlayer()

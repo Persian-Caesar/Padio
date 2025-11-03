@@ -22,6 +22,8 @@ declare global {
             status_type: string;
             support_id: string;
             support_url: string;
+            update_stats_interval: string;
+            update_stats_message: EnvBoolean;
             token: string;
         }
     }

@@ -10,7 +10,7 @@ import {
 } from "../../types/database";
 import { CommandType } from "../../types/interfaces";
 import { getOption, isBaseInteraction } from "../../utils/interactionTools";
-import DatabaseProperties from "../../utils/DatabaseProperties";
+import DatabaseProperties from "../../utils/dbAccess";
 import checkPlayerPerms from "../../utils/checkPlayerPerms";
 import selectLanguage from "../../utils/selectLanguage";
 import responseError from "../../utils/responseError";
@@ -19,6 +19,7 @@ import MusicPlayer from "../../model/MusicPlayer";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
+import dbAccess from "../../utils/dbAccess";
 
 const defaultLanguage = selectLanguage(config.discord.default_language).commands.play;
 const ephemeral = selectLanguage(config.discord.default_language).replies.ephemeral;
@@ -73,12 +74,11 @@ export default {
 
   run: async (client, interaction, args) => {
     try {
-      const db = client.db!;
-      const database = DatabaseProperties(interaction.guildId!);
-      const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
+      const guildId = interaction.guildId!;
+      const lang = (await dbAccess.getLanguage(guildId)) || config.discord.default_language;
       const language = selectLanguage(lang).commands.play;
       const query = isBaseInteraction(interaction) ? getOption<string>(interaction, "getString", "station") : args!.join(" ");
-      const panelId = await db.get<PanelDB>(database.panel);
+      const panelId = await dbAccess.getPanel(guildId);
 
       // Check perms
       if (await checkPlayerPerms(interaction))
@@ -112,7 +112,7 @@ export default {
       const player = new MusicPlayer(interaction);
 
       await player.radio(radiostation[firstChoice as "Persian Rap"]);
-      await db.set(database.station, firstChoice);
+      await dbAccess.setStation(guildId, firstChoice);
       await response(interaction, {
         content: language.replies.play.replaceValues({
           song: firstChoice

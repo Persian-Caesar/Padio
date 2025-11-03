@@ -1,7 +1,5 @@
 import {
   ActionRowBuilder,
-  APIMessageComponentEmoji,
-  APISelectMenuOption,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ButtonBuilder,
@@ -17,17 +15,13 @@ import {
   CommandType,
   Language
 } from "../../types/interfaces";
-import {
-  LanguageDB,
-  PrefixDB
-} from "../../types/database";
 import { Categoris } from "../../types/types";
-import DatabaseProperties from "../../utils/DatabaseProperties";
 import selectLanguage from "../../utils/selectLanguage";
 import responseError from "../../utils/responseError";
 import responseEdit from "../../utils/responseEdit";
 import getAuthor from "../../utils/getAuthor";
 import EmbedData from "../../storage/EmbedData";
+import dbAccess from "../../utils/dbAccess";
 import response from "../../utils/response";
 import config from "../../../config";
 import error from "../../utils/error";
@@ -79,13 +73,12 @@ export default {
       const timeout = 1000 * 60 * 2;
       const category = new Map<string, string>();
       const menu_options: SelectMenuComponentOptionData[] = [];
-      const db = client.db!;
-      const database = DatabaseProperties(interaction.guildId!);
-      const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
+      const guildId = interaction.guildId!;
+      const lang = (await dbAccess.getLanguage(guildId)) || config.discord.default_language;
       const language = selectLanguage(lang);
       const author = getAuthor(interaction)!;
       const onlyOwner = client.commands.filter(a => a.only_owner);
-      const prefix = (await db.get<PrefixDB>(database.prefix)) || config.discord.prefix;
+      const prefix = (await dbAccess.getPrefix(guildId)) || config.discord.prefix;
       const help = client.commands.get("help")!;
       const embed = new EmbedBuilder()
         .setAuthor({

@@ -11,10 +11,10 @@ import { isBaseInteraction } from "./interactionTools";
 import { Respondable } from "../types/types";
 import { LanguageDB } from "../types/database";
 import selectLanguage from "./selectLanguage";
+import DiscordClient from "../model/Client";
 import repeatAction from "./repeatAction";
 import EmbedData from "../storage/EmbedData";
 import config from "../../config";
-import client from "../..";
 import error from "./error";
 
 export default async function responseError(
@@ -26,7 +26,7 @@ export default async function responseError(
 ) {
   try {
     const
-      db = client.db!,
+      db = (interaction.client as DiscordClient).db!,
       databaseNames = {
         language: `language.${interaction.guildId}`
       },

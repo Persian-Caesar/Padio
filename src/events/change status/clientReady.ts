@@ -1,13 +1,12 @@
-import { TotalCommandsUsedDB } from "../../types/database";
 import { StatusActivityType } from "../../types/types";
 import { ActivityType } from "discord.js";
 import DiscordClient from "../../model/Client";
+import dbAccess from "../../utils/dbAccess";
 import config from "../../../config";
 import error from "../../utils/error";
 
 export default async (client: DiscordClient) => {
   try {
-    const db = client.db!;
 
     // Change Bot Status
     setInterval(async function () {
@@ -26,7 +25,7 @@ export default async (client: DiscordClient) => {
           servers: client.guilds.cache.size.toLocaleString(),
           members: client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString(),
           prefix: config.discord.prefix,
-          usedCommands: (await db.get<TotalCommandsUsedDB>("totalCommandsUsed") || 0).toLocaleString()
+          usedCommands: (await dbAccess.getTotalCommandsUsed() || 0).toLocaleString()
         });
 
       client.user!.setPresence({

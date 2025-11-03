@@ -23,7 +23,7 @@ export default {
         default_language: process.env.default_language || "en", // Bot default language in discord.
         one_guild: process.env.one_guild === "true" ? true : false || false, // One Guild on or off
         delete_commands: process.env.delete_commands === "true" ? true : false || false, // Delete slash commands each time you run the source.
-        status_loop: parseInt(process.env.status_loop_count!) || 30 * 1000, // Bot status loop. (By default it's every 30 seconds)
+        status_loop: parseInt(process.env.status_loop_count) || 30 * 1000, // Bot status loop. (By default it's every 30 seconds)
         token: process.env.token || "", // Bot token.
         prefix: process.env.prefix || "", // Bot message command prefix.
         status: {
@@ -38,6 +38,8 @@ export default {
             invite: process.env.support_url || "https://discord.gg/AfkuXgCKAQ", // Support server invite link.
             id: process.env.support_id || "", // Support server Id.
             stats_channel: process.env.support_stats || "", // Id of  channel to send bot stats on discord.
+            update_stats_interval: parseInt(process.env.update_stats_interval) || 1000 * 60 * 60, // Interval timer for update status message it's by default 1 hours.
+            update_stats_message: process.env.update_stats_message === "true" ? true : false || false, // Activate auto bot status message updator.
             webhook: {
                 url: process.env.webhook_url || "", // Webhook logger url.
                 avatar: process.env.webhook_avatar || "", // Webhook logger avatar.

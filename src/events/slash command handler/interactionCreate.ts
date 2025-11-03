@@ -2,21 +2,19 @@ import {
   Interaction,
   MessageFlags
 } from "discord.js";
-import { LanguageDB } from "../../types/database";
-import DatabaseProperties from "../../utils/DatabaseProperties";
 import checkCmdCooldown from "../../utils/checkCmdCooldown";
 import selectLanguage from "../../utils/selectLanguage";
 import checkCmdPerms from "../../utils/checkCmdPerms";
 import DiscordClient from "../../model/Client";
 import repeatAction from "../../utils/repeatAction";
+import dbAccess from "../../utils/dbAccess";
 import config from "../../../config";
 import error from "../../utils/error";
 
 export default async (client: DiscordClient, interaction: Interaction) => {
   try {
-    const db = client.db!;
-    const database = DatabaseProperties(interaction.guildId!);
-    const lang = (await db.get<LanguageDB>(database.language)) || config.discord.default_language;
+    const guildId = interaction.guildId!;
+    const lang = (await dbAccess.getLanguage(guildId)) || config.discord.default_language;
     const language = selectLanguage(lang).replies;
 
     // Load Slash Commands
@@ -76,7 +74,7 @@ export default async (client: DiscordClient, interaction: Interaction) => {
 
 
         // Count the new command
-        await db.add("totalCommandsUsed", 1);
+        await dbAccess.addTotalCommandsUsed(1);
 
         // Command Handler 
         return await command.run(client, interaction);

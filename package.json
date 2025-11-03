@@ -1,6 +1,6 @@
 {
   "name": "radio-bot",
-  "version": "0.0.3",
+  "version": "0.0.2",
   "description": "This is an advanced radio bot for Discord voice channels, allowing users to enjoy a wide variety of trending online radios with high quality and seamless performance.",
   "main": "./dist/index.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "@discordjs/voice": "^0.19.0",
     "@snazzah/davey": "^0.1.7",
     "colors": "^1.4.0",
-    "discord.js": "^14.23.2",
+    "discord.js": "^14.24.2",
     "dotenv": "^17.2.3",
     "ffmpeg-static": "^5.2.0",
     "libsodium-wrappers": "^0.7.15",
@@ -25,7 +25,7 @@
     "quickmongo": "^5.2.0"
   },
   "devDependencies": {
-    "@types/node": "^22.15.3",
-    "typescript": "^5.8.3"
+    "@types/node": "^22.19.0",
+    "typescript": "^5.9.3"
   }
 }
