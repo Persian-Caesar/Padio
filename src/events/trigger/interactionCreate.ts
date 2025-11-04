@@ -10,7 +10,8 @@ import error from "../../utils/error";
 
 export default async (client: DiscordClient, interaction: ButtonInteraction) => {
   try {
-    if (!interaction.isButton()) return;
+    if (!interaction.isButton())
+      return;
 
     if (interaction.customId === "refreshStatus") {
       await interaction.deferUpdate({ withResponse: true });
