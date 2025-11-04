@@ -1,33 +1,21 @@
-<div align="center">
-    <img src="https://badges.aleen42.com/src/npm.svg">
-    <img src="https://badges.aleen42.com/src/node.svg">
-    <img src="https://badges.aleen42.com/src/javascript.svg">
-    <img src="https://img.shields.io/github/v/release/Sobhan-SRZA/Radio-Bot?label=Version">
-    <div>
-        <img src="https://img.shields.io/github/license/Sobhan-SRZA/Radio-Bot?label=License">
-        <img src="https://img.shields.io/github/last-commit/Sobhan-SRZA/Radio-Bot?label=Last Commit">
-        <img src="https://img.shields.io/github/release-date/Sobhan-SRZA/Radio-Bot?label=Last Release">
-    </div>
-    <img src="https://img.shields.io/github/forks/Sobhan-SRZA/Radio-Bot?label=Forks">
-    <img src="https://img.shields.io/github/stars/Sobhan-SRZA/Radio-Bot?label=Stars">
-    <img src="https://img.shields.io/github/watchers/Sobhan-SRZA/Radio-Bot?label=Watchers">
-    <img src="https://img.shields.io/github/languages/code-size/Sobhan-SRZA/Radio-Bot?label=Code Size">
-    <img src="https://img.shields.io/github/directory-file-count/Sobhan-SRZA/Radio-Bot?label=Files">
-    <div>
-        <img style="display:block;margin-left:auto;margin-right:auto;width:30%;" src="https://github-readme-stats.vercel.app/api/pin/?username=Sobhan-SRZA&repo=Radio-Bot&theme=react">
-    </div>
-</div>
+# Padio (Persian Caesar Discord Radio Bot) – Full Documentation  
+**A High-Performance Radio & Utility Bot for Discord**  
+*Developed by Sobhan-SRZA (mr.sinre)*  
+GitHub: [Persian-Caesar](https://github.com/Persian-Caesar) | Support: [dsc.gg/persian-caesar](https://dsc.gg/persian-caesar)  
+
+> **Version:** `0.0.2`  
+> **Developed by:** Sobhan-SRZA (mr.sinre)  
+> **GitHub:** [https://github.com/Sobhan-SRZA](https://github.com/Sobhan-SRZA)  
+> **Support Server:** [https://dsc.gg/persian-caesar](https://dsc.gg/persian-caesar)  
+> **Copyright © Persian Caesar** – All rights reserved.
 
 ---
 
-# 🎧 Discord Radio Bot 📻
-
-This is an advanced radio bot for Discord voice channels, allowing users to enjoy a wide variety of trending online radios with high quality and seamless performance.
-
-## Features ✨
-- **Seamless Performance**: Enjoy lag-free, high-quality audio playback.
-- **Wide Variety of Radio Stations**: Stream trending online radio stations in high quality.
-- **Multilingual Support**: Padio supports multiple languages. 🌍
+## Overview  
+**Persian Caesar Radio Bot** is a **Discord voice radio bot** built using **TypeScript** and **Discord.js v14**, designed to stream high-quality online radio stations directly into voice channels. It features:  
+- Online radio streaming with voice channel control panels  
+- Slash & message command hybrid system  
+- Multi-language support (`en`, `per`, `jp`, `th`, `tr`, `zh`)  
   - English (Default)
   - فارسی (Farsi)
   - Türkçe (Turkish - Istanbul)
@@ -35,226 +23,559 @@ This is an advanced radio bot for Discord voice channels, allowing users to enjo
   - 日本語 (Japanese)
   - ภาษาไทย (Thai)
 
-- **Customizable Prefix**: Tailor the bot to your server’s needs by setting a custom command prefix.
-- **User-Friendly Panel**: An intuitive panel for managing radio playback and settings from within Discord.
-- **Station Switching**: Change radio stations effortlessly! 🎵
-- **AFK Channel Reconnection**: Automatically rejoin pre-configured AFK channels from the server’s database.
-- **High-Quality Streaming**: Experience smooth, lag-free audio. ⚡
-- **Clean and Editable Code**: Well-structured for new developers to easily customize. 🧹
-- **Database Support**: Compatible with multiple databases like SQL, JSON, Docker, and MongoDB. 💾
-- **Audio Format Support**: Play audio from various formats such as OGG, MP3, MP4, MKV, and M4A (coming soon).
+- Dynamic status updates & server statistics  
+- Cooldowns, permissions, and owner-only commands  
+- QuickDB integration (JSON, MySQL, SQLite, MongoDB)  
+- Advanced logging & error reporting via webhooks  
+- Database support: JSON, MySQL, SQLite, MongoDB
+- Slash & message commands with autocomplete
+- Anti-crash, error webhook logging, status loop
+- Owner-only commands, cooldown, permission checks
 
---- 
+## **How It Works (Architecture)**
 
-## All Commands 📜
-
-### 📠 | Admin Commands:
-- `/setup panel` | `p!setup panel`  
-  **Description**: Create a radio control panel for quick and easy management.
-  
-- `/setup prefix` | `p!setup prefix`  
-  **Description**: Set a custom prefix for bot commands.
-  
-- `/setup language` | `p!setup language`  
-  **Description**: Change the bot’s language to suit your server’s needs.
-
-### 🎧 | Music Commands:
-- `/afk` | `p!afk [channel | id]`  
-  **Description**: Enable AFK mode for a specified voice channel.
-
-- `/pause` | `p!pause`  
-  **Description**: Temporarily stop the player.
-
-- `/resume` | `p!resume`  
-  **Description**: Resume the player.
-
-- `/play` | `p!play`  
-  **Description**: Play a radio station in the voice channel.
-
-- `/stop` | `p!stop`  
-  **Description**: Stop the radio playback and remove the player from the voice channel.
-
-- `/volume` | `p!volume [1-200]`  
-  **Description**: Adjust the player’s volume or display the current volume level.
-
-### 🔧 | Misc Commands:
-- `/about` | `p!about`  
-  **Description**: Displays information about the bot.
-  
-- `/help` | `p!help`  
-  **Description**: Display the list of available bot commands.
-  
-- `/invite` | `p!invite`  
-  **Description**: Get the invite link for the bot.
-  
-- `/ping` | `p!ping`  
-  **Description**: Display the bot’s ping.
-
-- `/report` | `p!report`  
-  **Description**: Report any issues or bugs related to the bot.
-
-### 👑 | Owner (For Developers) Commands:
-- `p!setactivity [status:[dnd|online|idle|invisible] type:[Playing|Streaming|Listening|Watching|Custom|Competing] name:[string] url:[url|link]]`  
-  **Description**: Temporarily change the bot’s status.
-
-- `p!guilds [id]`  
-  **Description**: Display the list of servers the bot has joined.
-
----
-
-## Installation and Setup 📦
-
-### 1. Download and Install
-Clone or download the project files:
-```bash
-git clone https://github.com/Sobhan-SRZA/Radio-Bot.git
-cd Radio-Bot
+```
+Client (DiscordClient)
+│
+├── Events → interactionCreate, ready, guildCreate/Delete
+├── Handlers → Load commands & events
+├── Utils → Helper functions (response, error, cooldown, etc.)
+├── Storage → Embed data, radio stations, language list
+├── Types → Interfaces, global extensions
+├── Model → Client, Database, MusicPlayer
+└── locales/ → Language JSON files
 ```
 
-Install all dependencies:
-```bash
-npm i
+### Key Features:
+- Play **50+ radio stations** (Persian Rap, Lofi, Anime, EDM, etc.)
+- **Customizable per-server settings** (prefix, language, AFK channel, radio panel)
+- **Interactive control panel** with buttons and select menus
+- **Multilingual support** (English, Persian, Turkish, Chinese, Japanese, Thai)
+- **Database support**: JSON, MySQL, SQLite, MongoDB
+- **Slash & message commands**
+- **Anti-crash system**, **error logging to Discord webhook**
+- **Status loop**, **presence rotation**, **uptime tracking**
+- **AFK mode**, **voice channel management**, **volume control**
+- **Owner-only commands**, **cooldown system**, **permission checks**
+
+---
+
+## Core Features  
+
+| Feature                     | Description                                                          |
+| --------------------------- | -------------------------------------------------------------------- |
+| **Radio Player**            | Stream high-quality online radio stations in voice channels          |
+| **Control Panel**           | Interactive message panel with station selector                      |
+| **AFK Mode**                | Auto-resume playback if users leave voice                            |
+| **Slash & Prefix Commands** | Full hybrid command support                                          |
+| **Multilingual**            | 6 languages with dynamic switching                                   |
+| **Database Flexibility**    | JSON, MySQL, SQLite, MongoDB                                         |
+| **Auto Status Updates**     | Live bot stats in support server                                     |
+| **Error Logging**           | Webhook-based crash & error reporting                                |
+| **Custom Extensions**       | Global `.toCapitalize()`, `.replaceValues()`, `.HexToNumber()`, etc. |
+
+### Core Flow:
+1. **Bot starts** → Loads config → Connects to database → Loads commands/events
+2. **User runs command** → `interactionCreate` → Permission & cooldown check → Execute command
+3. **Radio play** → `play` command → Join voice → Stream from URL → Create control panel
+4. **Panel interaction** → Button/menu → Update player state (pause, resume, volume, stop)
+
+---
+
+## **Policies & Guidelines**
+
+- **Credit Required**: You **must** credit **"Persian Caesar"** in any public use, documentation, or communication.
+- **No Token Sharing**: Never expose `.env` or bot token.
+- **No Malicious Use**: Do not use for spam, harassment, or illegal activities.
+- **Forking Allowed**: You may fork, but **keep the copyright notice**.
+- **Support**: Issues → Open GitHub issue or join support server.
+
+---
+
+## **Technologies & Packages**
+
+| Package              | Version    | Purpose                                                      |
+| -------------------- | ---------- | ------------------------------------------------------------ |
+| `@discordjs/opus`    | `^0.10.0`  | Opus audio encoder/decoder for voice                         |
+| `@discordjs/voice`   | `^0.19.0`  | Voice connection & audio streaming                           |
+| `@snazzah/davey`     | `^0.1.7`   | Utility for Discord.js (used in extensions)                  |
+| `colors`             | `^1.4.0`   | Colored console output (fallback for `chalk`)                |
+| `discord.js`         | `^14.24.2` | Discord API wrapper                                          |
+| `dotenv`             | `^17.2.3`  | Load environment variables from `.env`                       |
+| `ffmpeg-static`      | `^5.2.0`   | Static FFmpeg binary for audio processing                    |
+| `libsodium-wrappers` | `^0.7.15`  | Sodium encryption for voice (required by `@discordjs/voice`) |
+| `quick.db`           | `^9.1.7`   | Lightweight database (JSON/MySQL/SQLite)                     |
+| `quickmongo`         | `^5.2.0`   | MongoDB driver (optional)                                    |
+| `typescript` (dev)   | `^5.9.3`   | TypeScript compiler                                          |
+| `@types/node` (dev)  | `^22.19.0` | Node.js type definitions                                     |
+
+> **Node.js Version**: `>=18.0.0`
+
+---
+
+## Project Structure  
+
+```
+src/
+├── index.ts                    → Entry point
+├── config.ts                   → Config file befor compile
+├── .env                        → env file for setup (you can use config.ts btw it's optional)
+├── README.md                   # This file. (Documents)
+├── events/                     # Event listeners
+│   ├── autocomplete/
+│   │   └── interactionCreate.ts
+│   ├── button/
+│   │   └── interactionCreate.ts
+│   ├── change status/
+│   │   └── clientReady.ts
+│   ├── guilds logger/
+│   │   ├── guildCreate.ts
+│   │   └── guildDelete.ts
+│   ├── message command handler/
+│   │   └── messageCreate.ts
+│   ├── radio/
+│   │   ├── clientReady.ts
+│   │   ├── interactionCreate.ts
+│   │   └── voiceStateUpdate.ts
+│   ├── report/
+│   │   └── interactionCreate.ts
+│   ├── slash command handler/
+│   │   └── interactionCreate.ts
+│   └── trigger/
+│       ├── clientReady.ts
+│       └── interactionCreate.ts
+├── functions/                   # Utility functions
+│   ├── logger.ts
+│   ├── post.ts
+│   ├── setupGlobalExtensions.ts
+│   ├── sleep.ts
+│   └── strToMs.ts
+├── handlers/                    # Command & event loaders
+│   ├── commandHandler.ts
+│   └── eventsHandler.ts
+├── model/                       # Core classes
+│   ├── Client.ts
+│   ├── Database.ts
+│   └── MusicPlayer.ts
+├── types/                       # TypeScript interfaces & types
+│   ├── database.ts              → DB type aliases
+│   ├── global.d.ts              → Global extensions
+│   ├── interfaces.ts            → Command, Language, Config
+│   └── types.ts                 → General types
+├── utils/                       # Helper utilities
+│   ├── checkCmdCooldown.ts
+│   ├── checkCmdPerms.ts
+│   ├── checkPlayerPerms.ts
+│   ├── database.ts
+│   ├── dbAccess.ts
+│   ├── error.ts
+│   ├── getAuthor.ts
+│   ├── GetInvite.ts
+│   ├── interactionTools.ts
+│   ├── repeatAction.ts
+│   ├── response.ts
+│   ├── responseDelete.ts
+│   ├── responseEdit.ts
+│   ├── responseError.ts
+│   ├── selectLanguage.ts
+│   ├── SendGuildAlert.ts
+│   ├── StatusEmbedBuilder.ts
+│   └── yes-or-no.ts
+├── commands/
+│   ├── Admin/setup.ts           → Server setup (panel, prefix, language)
+│   ├── Misc/
+│   │   ├── about.ts             → Bot stats & updates
+│   │   ├── help.ts              → Interactive help menu
+│   │   ├── invite.ts            → Invite links
+│   │   ├── ping.ts              → Latency & system stats
+│   │   └── report.ts            → Report system
+│   ├── Music/
+│   │   ├── afk.ts               → Set AFK voice channel
+│   │   ├── pause.ts             → Pause radio
+│   │   ├── play.ts              → Play station (autocomplete)
+│   │   ├── resume.ts            → Resume radio
+│   │   ├── stop.ts              → Stop radio
+│   │   └── volume.ts            → Volume control
+│   └── Owner/
+│       ├── guilds.ts            → List all guilds (pagination)
+│       └── setactivity.ts       → Set custom presence
+└── storage/
+    ├── locales/
+    │   ├── en.json              → English
+    │   ├── per.json             → فارسی
+    │   ├── tr.json              → Türkçe
+    │   ├── zh.json              → 中文
+    │   ├── jp.json              → 日本語
+    │   └── th.json              → ภาษาไทย
+    ├── EmbedData.ts             → Colors, emotes, footer
+    ├── languages.json           → List of supported languages
+    └── radiostation.json        → All radio URLs
 ```
 
-### 2. Configure the Environment Variables (.env) ⚙️
-Create a `.env` file from the example file:
+> **Note**: `locales/*.json` files contain full translation for all bot messages.
+
+
+---
+
+## Key Changes & Fixes (Latest Update)
+
+| File             | Change                              | Description                                                                                                       |
+| ---------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `clientReady.ts` | **Fixed `stats_channel` reference** | Previously used invalid `config.discord.support.stats_channel`. Now safely falls back to `support.id` if missing. |
+| `MusicPlayer.ts` | **Improved stream handling**        | Uses `fetch()` with `AbortController` for timeout safety                                                          |
+| `dbAccess.ts`    | **Fixed `deletePrefix` typo**       | Was deleting `language` instead of `prefix`                                                                       |
+| `global.d.ts`    | **Global prototype extensions**     | `.random()`, `.chunk()`, `.replaceValues()`, etc.                                                                 |
+| `error.ts`       | **Webhook error logging**           | Sends full stack trace + file attachment if >4096 chars                                                           |
+
+---
+
+## Setup Guide  
+
+### 1. **Clone & Install**
 ```bash
-cp .env.example .env
+git clone https://github.com/Persian-Caesar/Persian-Caesar.git
+cd Persian-Caesar
+npm install
 ```
 
-Now, edit the `.env` file and add your bot’s required information. Here are the details for each field:
+### 2. **Configuration (`config.ts` or `.env`)**
+#### Example for .env (see `example.env`):
+```env
+token='YOUR_BOT_TOKEN'
+prefix='!'
+default_language='en'
+database_type='json'
+webhook_url='https://discord.com/api/webhooks/...'
+owners='["123456789"]'
+anti_crash='true'
+logger='true'
+```
 
-### `.env` Configuration
+#### Example for config.ts:
+```ts
+discord: {
+  token: "YOUR_BOT_TOKEN",
+  default_language: "en",
+  prefix: "!",
+  default_invite: "https://discord.com/oauth2/authorize?client_id={clientId}&scope=bot%20applications.commands&permissions=274878258176"
+},
+source: {
+  database: {
+    type: "json", // json | mysql | sql | mongodb
+    mysql: { host, user, password, database },
+    mongoURL: "mongodb://..."
+  },
+  logger: true,
+  anti_crash: true
+}
+```
 
-| Variable                 | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `token`                  | **Bot Token**: The token for your Discord bot. You can generate this in the [Discord Developer Portal](https://discord.com/developers/applications). Example: `token="Your Discord Bot Token"`.                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `prefix`                 | **Command Prefix**: The prefix used before commands. Example: `prefix="!"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `status_activity`        | **Bot Status Activity**: Set the status message for the bot. You can use placeholders like `{members}` to show the number of members, `{servers}` to show the number of servers, `{usedCommands}` to show the total number of commands used, `{joinedVoiceChannels}` to show how many voice channels the bot has joined, or `{prefix}` to show the bot's default prefix. Example: `status_activity="["Use {prefix}help or /help to see bot features.", "Working in {servers} Servers", "Work for {members} Members", "Total Used Commands {usedCommands}", "Playing In {joinedVoiceChannels} Voice Channels"]"`. |
-| `status_type`            | **Bot Status Type**: Choose the type of status, such as `"Playing"`, `"Listening"`, `"Watching"`, etc. Example: `status_type="["Playing"]"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `status_presence`        | **Bot Presence**: Define whether the bot appears online, idle, or DND (Do Not Disturb). Example: `status_presence="["online"]"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `database_type`          | **Database Type**: Choose the database type to store user and server data. Supported values: `"json"`, `"mysql"`, `"mongodb"`. Example: `database_type="json"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `database_mongoURL`      | **MongoDB URL**: If using MongoDB, set the connection URL. Example: `database_mongoURL="mongodb+srv://user:password@cluster.mongodb.net/dbname"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `database_msql_host`     | **MySQL Host**: The host for your MySQL database if using MySQL. Example: `database_msql_host="localhost"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `database_msql_user`     | **MySQL User**: Your MySQL database username. Example: `database_msql_user="root"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `database_msql_password` | **MySQL Password**: Your MySQL database password. Example: `database_msql_password="password"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `database_msql_database` | **MySQL Database Name**: The name of your MySQL database. Example: `database_msql_database="dbname"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `support_id`             | **Support Server ID**: The ID of your support Discord server. Example: `support_stats="Some Server ID"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `support_url`            | **Support Server URL**: The invite link to your support server. Example: `support_url="https://discord.gg/inviteCode"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `support_stats`          | **Bot Stats Channel ID**: The ID of the channel where bot stats should be sent. Example: `support_stats="Some Channel ID"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `webhook_url`            | **Webhook Logger URL**: A Discord webhook URL to log important information. Example: `webhook_url="Some Webhook URL"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `webhook_avatar`         | **Webhook Avatar**: URL to an avatar image for the webhook logger. Example: `webhook_avatar="Some Image URL"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `webhook_username`       | **Webhook Username**: Name displayed when the webhook posts messages. Example: `webhook_username="Bot Logger"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `webhook_thread_bugs`    | **Bug Report Thread ID**: The ID of the thread for logging errors. Example: `webhook_thread_bugs="Some Thread ID"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `webhook_thread_report`  | **User Report Thread ID**: The ID of the thread for logging user reports. Example: `webhook_thread_report="Some Thread ID"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `webhook_thread_status`  | **Status Alerts Thread ID**: The ID of the thread for status alerts. Example: `webhook_thread_status="Some Thread ID"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `owners`                 | **Bot Owners**: List of Discord IDs that are considered bot owners. Example: `owners="["123456789012345678", "987654321098765432"]"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `default_language`       | **Default Language**: The default language the bot should use. Example: `default_language="en"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `anti_crash`             | **Anti-Crash Controller**: Enable or disable the anti-crash controller. Example: `anti_crash=true`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `one_guild`              | **One Guild Mode**: Restrict bot to one guild only. Example: `one_guild=true`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `logger`                 | **Error Logging**: Enable or disable sending errors to Discord via webhook. Example: `logger=true`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `dashboard`              | **Enable Dashboard**: Whether the web-based dashboard is enabled or not. Example: `dashboard=true`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `dashboard_port`         | **Dashboard Port**: The port number for the dashboard to run on. Example: `dashboard_port=3000`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `dashboard_host`         | **Dashboard Host URL**: The host URL for the dashboard. Example: `dashboard_host="http://localhost:3000"`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-
-### 3. Run the Bot 🚀
-Once you’ve configured the `.env` file, you can start the bot by running:
+### 3. **Run**
 ```bash
-npm start
+npm run build    # Compile TS → JS
+npm start        # Start bot
 ```
 
 ---
 
-## Technologies Used 🛠️
-This bot is built using **Node.js** and utilizes the following key packages:
+## Command System  
 
-| Packages                                                               | Version         | Install                          |
-| ---------------------------------------------------------------------- | --------------- | -------------------------------- |
-| [discord.js](https://www.npmjs.com/package/discord.js)                 | Latest ^14.16.2 | `npm install discord.js`         |
-| [@discordjs/voice](https://www.npmjs.com/package/@discordjs/voice)     | Latest ^0.17.0  | `npm install @discordjs/voice`   |
-| [dotenv](https://www.npmjs.com/package/dotenv)                         | Latest ^16.4.5  | `npm install dotenv`             |
-| [ffmpeg-static](https://www.npmjs.com/package/ffmpeg-static)           | Latest ^5.2.0   | `npm install ffmpeg-static`      |
-| [quick.db](https://www.npmjs.com/package/quick.db)                     | Latest ^9.1.7   | `npm install quick.db`           |
-| [cli-color](https://www.npmjs.com/package/cli-color)                   | Latest ^2.0.4   | `npm install cli-color`          |
-| [libsodium-wrappers](https://www.npmjs.com/package/libsodium-wrappers) | Latest ^0.7.15  | `npm install libsodium-wrappers` |
-| [opusscript](https://www.npmjs.com/package/opusscript)                 | Latest ^0.0.8   | `npm install opusscript`         |
+### **Hybrid Commands**
+- **Slash-only**: `only_slash: true`
+- **Message-only**: `only_message: true`
+- **Both**: Omit both flags
 
----
+### **Cooldowns**
+```ts
+cooldown: 5 // seconds
+```
 
-## Getting Help 🆘
-**Coded by** [Sobhan-SRZA](https://github.com/Sobhan-SRZA) for [Persian Caesar](https://dsc.gg/persian-caesar).
-For support and assistance, join our [Discord server](https://discord.gg/AfkuXgCKAQ).
+### **Permissions**
+```ts
+default_member_permissions: PermissionsBitField.Flags.Administrator
+default_bot_permissions: PermissionsBitField.Flags.SendMessages
+```
 
 ---
 
-## License 📜
-This project is licensed under the **BSD-3-Clause** License. Please give credit to "Persian Caesar" if you face issues using this code.
+## **Key Classes & Functions**
+
+### `DiscordClient` (model/Client.ts)
+```ts
+class DiscordClient extends Client {
+  commands: Collection<string, CommandType>;
+  cooldowns: Collection<string, Collection<string, number>>;
+  db?: Database;
+  readyTimestamp?: number;
+  player: MusicPlayer;
+
+  constructor() {
+    super({ intents: [...] });
+    this.commands = new Collection();
+    this.cooldowns = new Collection();
+    this.player = new MusicPlayer(this);
+  }
+}
+```
+
+### `MusicPlayer` (model/MusicPlayer.ts)
+```ts
+class MusicPlayer {
+  client: DiscordClient;
+  players: Map<string, RadioPlayer>;
+
+  play(guildId: string, station: string) { ... }
+  pause(guildId: string) { ... }
+  resume(guildId: string) { ... }
+  stop(guildId: string) { ... }
+  setVolume(guildId: string, volume: number) { ... }
+}
+```
+
+### `checkCmdPerms` (utils/checkCmdPerms.ts)
+```ts
+const hasPerm = await checkCmdPerms(interaction, command);
+if (hasPerm) return;
+```
+
+### `response` (utils/response.ts)
+```ts
+await response(interaction, { content: "Hello!" });
+```
+
+### `selectLanguage` (utils/selectLanguage.ts)
+```ts
+const lang = selectLanguage("per"); // Returns full language object
+```
+
+### Global Extensions (types/global.d.ts)
+```ts
+"hello {name}".replaceValues({ name: "world" }) // → "hello world"
+[1,2,3].random() // → 2
+"#ff0000".HexToNumber() // → 16711680
+"123".convertToPersianString() // → "۱۲۳"
+```
 
 ---
 
-## Contact 📞
-<div align="center">
-  <a href="https://srza.ir" target="_blank">
-   <img align="left" src="https://raw.githubusercontent.com/Sobhan-SRZA/Sobhan-SRZA/refs/heads/main/images/social.png" alt="Sobhan-SRZA social" width=400px>
-  </a>
+## Music & Radio System  
 
-  <a href="https://t.me/d_opa_mine" target="_blank">
-   <img alt="Telegram"
-    src="https://raw.githubusercontent.com/Sobhan-SRZA/Sobhan-SRZA/refs/heads/main/images/telegram-ch.svg"
-    height="30" />
-  </a>
+### **Player Features**
+- Queue shuffling
+- Auto-reconnect
+- Volume control (0–200%)
+- Pause/resume
+- Error recovery
 
-  <a href="https://t.me/Sobhan_SRZA" target="_blank">
-   <img alt="Telegram"
-    src="https://raw.githubusercontent.com/Sobhan-SRZA/Sobhan-SRZA/refs/heads/main/images/telegram-ac.svg"
-    height="30" />
-  </a>
+### **Control Panel**
+- Dropdown menu with radio stations
+- Persistent message in text channel
+- Auto-update on interaction
 
-  <a href="https://www.instagram.com/mr.sinre?igsh=cWk1aHdhaGRnOGg%3D&utm_source=qr" target="_blank">
-   <img alt="Instagram"
-    src="https://raw.githubusercontent.com/Sobhan-SRZA/Sobhan-SRZA/refs/heads/main/images/instagram.svg"
-    height="30" />
-  </a>
+---
 
-  <a href="https://www.twitch.tv/sobhan_srza" target="_blank">
-   <img alt="Twitch"
-    src="https://raw.githubusercontent.com/Sobhan-SRZA/Sobhan-SRZA/refs/heads/main/images/twitch.svg"
-    height="30" />
-  </a>
+## **Localization System**
 
-  <a href="https://www.youtube.com/@mr_sinre?app=desktop&sub_confirmation=1" target="_blank">
-   <img alt="YouTube"
-    src="https://raw.githubusercontent.com/Sobhan-SRZA/Sobhan-SRZA/refs/heads/main/images/youtube.svg"
-    height="30" />
-  </a>
-  
-  <a href="https://github.com/Sobhan-SRZA" target="_blank">
-   <img alt="Github"
-    src="https://raw.githubusercontent.com/Sobhan-SRZA/Sobhan-SRZA/refs/heads/main/images/github.svg"
-    height="30" />
-  </a>
-  
-  <p align="left">
-   <a href="https://discord.gg/xh2S2h67UW" target="_blank">
-    <img src="https://discord.com/api/guilds/1054814674979409940/widget.png?style=banner2" alt="pc-development.png">
-   </a>
-  </p>
+All text is stored in `locales/*.json`.
 
-  <p align="right">
-   <a href="https://discord.gg/54zDNTAymF" target="_blank">
-    <img src="https://discord.com/api/guilds/1181764925874507836/widget.png?style=banner2" alt="pc-club.png">
-   </a>
-  </p>
+### Example: `locales/en.json`
+```json
+{
+  "replies": {
+    "error": "An error occurred!",
+    "noChannelError": "You must be in a voice channel."
+  },
+  "commands": {
+    "setup": {
+      "description": "Configure bot settings"
+    }
+  }
+}
+```
 
-  <div align="center">
-   <a href="https://discord.com/users/865630940361785345" target="_blank">
-    <img alt="My Discord Account" src="https://discord.c99.nl/widget/theme-1/865630940361785345.png" />
-   </a>
-    <a href="https://discord.com/users/986314682547716117" target="_blank" align="right">
-    <img alt="Team Discord Account" src="https://discord.c99.nl/widget/theme-1/986314682547716117.png" />
-   </a>
-  </div>
+### Usage:
+```ts
+const lang = selectLanguage(guildLang);
+await response(interaction, { content: lang.replies.error });
+```
 
- </div>
+---
 
-</div>
+## Database (QuickDB Wrapper)
+
+| Method                                | Usage                      |
+| ------------------------------------- | -------------------------- |
+| `dbAccess.getLanguage(guildId)`       | Get server language        |
+| `dbAccess.setLanguage(guildId, data)` | Set server language        |
+| `dbAccess.deleteLanguage(guildId)`    | Delete server language     |
+| `dbAccess.getPrefix(guildId)`         | Get server prefix          |
+| `dbAccess.setPrefix(guildId, data)`   | Set server prefix          |
+| `dbAccess.deletePrefix(guildId)`      | Delete server prefix       |
+| `dbAccess.getPanel(guildId)`          | Get radio panel data       |
+| `dbAccess.setPanel(guildId, data)`    | Set radio panel data       |
+| `dbAccess.deletePanel(guildId)`       | Delete radio panel data    |
+| `dbAccess.getAfk(guildId)`            | Get AFK channel ID         |
+| `dbAccess.setAfk(guildId, data)`      | Set AFK channel ID         |
+| `dbAccess.deleteAfk(guildId)`         | Delete AFK channel         |
+| `dbAccess.getStation(guildId)`        | Get current radio station  |
+| `dbAccess.setStation(guildId, data)`  | Set current radio station  |
+| `dbAccess.deleteStation(guildId)`     | Delete radio station       |
+| `dbAccess.getStatus(guildId)`         | Get status message ID      |
+| `dbAccess.setStatus(guildId, data)`   | Set status message ID      |
+| `dbAccess.deleteStatus(guildId)`      | Delete status message ID   |
+| `dbAccess.getTotalCommandsUsed()`     | Get total commands used    |
+| `dbAccess.addTotalCommandsUsed(data)` | Add to total commands used |
+| `dbAccess.setTotalCommandsUsed(data)` | Set total commands used    |
+| `dbAccess.deleteTotalCommandsUsed()`  | Delete total commands used |
+
+Supports: **JSON**, **MySQL**, **SQLite**, **MongoDB**
+
+---
+
+## Commands Reference  
+
+| Command           | Description                                                                          | Usage (Slash)                           | Usage (Message)                                                                                       | Category | Permissions (User/Bot)                                     | Cooldown (s) |
+| ----------------- | ------------------------------------------------------------------------------------ | --------------------------------------- | ----------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------- | ------------ |
+| `/setup panel`    | Creates an interactive radio control panel in a text channel for selecting stations. | `/setup panel [channel: #text-channel]` | `!setup panel [#text-channel]`                                                                        | Admin    | Manage Guild / Send Messages, Embed Links                  | 10           |
+| `/setup prefix`   | Sets or resets a custom command prefix for the server.                               | `/setup prefix [input: new_prefix]`     | `!setup prefix [new_prefix]`                                                                          | Admin    | Manage Guild / Send Messages                               | 10           |
+| `/setup language` | Sets or resets the bot's language for the server.                                    | `/setup language [input: lang_code]`    | `!setup language [lang_code]`                                                                         | Admin    | Manage Guild / Send Messages                               | 10           |
+| `/about`          | Displays bot stats (guilds, users, commands, ping, uptime, memory, CPU, version).    | `/about`                                | `!about`                                                                                              | Misc     | Send Messages / Send Messages, Embed Links                 | 10           |
+| `/help`           | Shows an interactive menu with all commands, categorized.                            | `/help`                                 | `!help`                                                                                               | Misc     | Send Messages / Send Messages, Embed Links                 | 10           |
+| `/invite`         | Provides bot invite links (recommended, no-perm, and listing sites).                 | `/invite`                               | `!invite`                                                                                             | Misc     | Send Messages / Send Messages, Embed Links                 | 10           |
+| `/ping`           | Shows bot latency (WS ping, API, uptime, memory usage).                              | `/ping`                                 | `!ping`                                                                                               | Misc     | Send Messages / Send Messages, Embed Links                 | 10           |
+| `/report`         | Opens a modal to report issues; sends to support webhook with guild info.            | `/report`                               | `!report`                                                                                             | Misc     | Send Messages / Send Messages, Embed Links                 | 10           |
+| `/afk`            | Sets a voice channel as AFK (auto-reconnects and resumes playback).                  | `/afk [channel: #voice-channel]`        | `!afk [#voice-channel]`                                                                               | Music    | Manage Guild / Send Messages, Embed Links, Connect, Speak  | 5            |
+| `/pause`          | Pauses the current radio playback.                                                   | `/pause`                                | `!pause`                                                                                              | Music    | Send Messages / Send Messages, Embed Links, Connect, Speak | 5            |
+| `/resume`         | Resumes paused radio playback.                                                       | `/resume`                               | `!resume`                                                                                             | Music    | Send Messages / Send Messages, Embed Links, Connect, Speak | 5            |
+| `/play`           | Plays a radio station (autocomplete from list); restricted to panel channel if set.  | `/play [station: station_name]`         | `!play [station_name]`                                                                                | Music    | Send Messages / Send Messages, Embed Links, Connect, Speak | 5            |
+| `/stop`           | Stops playback and disconnects from voice.                                           | `/stop`                                 | `!stop`                                                                                               | Music    | Send Messages / Send Messages, Embed Links, Connect, Speak | 5            |
+| `/volume`         | Sets/displays volume (1-200%); shows current if no input.                            | `/volume [input: 1-200]`                | `!volume [1-200]`                                                                                     | Music    | Send Messages / Send Messages, Embed Links, Connect, Speak | 5            |
+| `/guilds`         | Lists all servers the bot is in (paginated; owner-only).                             | N/A (message-only)                      | `!guilds [guild_id]`                                                                                  | Owner    | Send Messages / Send Messages                              | 5            |
+| `/setactivity`    | Temporarily sets bot presence (owner-only).                                          | N/A (message-only)                      | `!setactivity status:[online/idle/dnd/invisible] type:[Playing/Streaming/...] name:[text] url:[link]` | Owner    | Send Messages / Send Messages                              | 5            |
+
+---
+
+## Logging & Error Handling  
+
+### **Console Logger**
+- Color-coded with `chalk`
+- Supports strings, objects, booleans
+
+### **Discord Webhook Logger**
+- Sends errors to support server
+- Thread-specific routing
+- File attachment for long stacks
+
+---
+
+## Global Extensions (via `setupGlobalExtensions.ts`)
+
+| Method                      | Example                                                 |
+| --------------------------- | ------------------------------------------------------- |
+| `.toCapitalize()`           | `"hello world".toCapitalize()` → `Hello World`          |
+| `.replaceValues(obj)`       | `"{name} is {age}".replaceValues({name:"Ali", age:20})` |
+| `.HexToNumber()`            | `"#ff0000".HexToNumber()` → `16711680`                  |
+| `.convertToPersianString()` | `"123".convertToPersianString()` → `۱۲۳`                |
+| `.random()`                 | `[1,2,3].random()` → `2`                                |
+| `.chunk(size)`              | `[1,2,3,4].chunk(2)` → `[[1,2],[3,4]]`                  |
+
+---
+
+## Events
+
+| Event                        | Purpose                       |
+| ---------------------------- | ----------------------------- |
+| `interactionCreate` (slash)  | Handle slash commands         |
+| `interactionCreate` (button) | Refresh status embed          |
+| `clientReady`                | Start status updater interval |
+
+---
+
+## Utilities
+
+| Utility                          | Function                       |
+| -------------------------------- | ------------------------------ |
+| `repeatAction()`                 | Retry failed Discord API calls |
+| `response()` / `responseError()` | Unified reply/edit system      |
+| `checkCmdCooldown()`             | Per-user cooldown enforcement  |
+| `checkCmdPerms()`                | Bot & user permission checks   |
+| `StatusEmbedBuilder()`           | Dynamic bot stats embed        |
+
+---
+
+## Language System
+
+### **Supported Languages**
+`en` | `per` (Persian) | `jp` | `th` | `tr` | `zh`
+
+### **Switch Language**
+```ts
+/setup language <lang>
+```
+ 
+---
+
+## **Error Handling**
+
+- All errors → `error(e)` → Sent to webhook if `logger: true`
+- Anti-crash → Wraps critical sections
+- `repeatAction` → Retries failed interactions
+
+---
+
+## **Deployment Tips**
+
+- Use **PM2** or **systemd** for production
+- Set `NODE_ENV=production`
+- Use **MongoDB** for large-scale
+- Enable `logger: true` in production
+
+---
+
+## **Contributing**
+
+1. Fork the repo
+2. Create branch: `feature/my-feature`
+3. Commit with **English comments**
+4. Open PR with description
+5. **Credit Persian Caesar**
+
+---
+
+## Support & Community
+
+| Platform       | Link                                                            |
+| -------------- | --------------------------------------------------------------- |
+| Support Server | [dsc.gg/persian-caesar](https://dsc.gg/persian-caesar)          |
+| GitHub         | [github.com/Persian-Caesar](https://github.com/Persian-Caesar)  |
+| Vote           | [top.gg/bot/padio](https://top.gg/bot/1282618377654898731/vote) |
+
+---
+
+## Credits & License
+
+> **Code by Sobhan-SRZA (mr.sinre)**  
+> **Developed for Persian Caesar**  
+> 
+> **If you use this code, you must credit "Persian Caesar" in your project.**
+
+```
+BSD 3-Clause License
+
+Copyright (c) 2025-2024, Sobhan-SRZA (mr.sinre) & Persian Caesar
+All rights reserved.
+
+You are allowed to:
+- Use privately
+- Modify
+- Fork
+
+You must:
+- Keep copyright notice
+- Credit "Persian Caesar" in docs
+- Not sell or claim as your own
+```
+---
+
+**Persian Caesar – Powering Discord with Music, Intelligence, and Elegance.**  
+*Keep the servers alive. Keep the music playing.*
